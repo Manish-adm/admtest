@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AMROCK CRM</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,sans-serif}
+:root{
+  --gold:#c9a96e;--gold-light:#e8d5a3;--gold-dark:#a07c40;
+  --ink:#0a0a0a;--ink2:#111827;--ink3:#1e293b;
+  --slate:#64748b;--slate2:#94a3b8;--slate3:#cbd5e1;
+  --bg:#f0f2f5;--surface:#fff;--surface2:#f8fafc;
+  --blue:#2563eb;--green:#16a34a;--amber:#d97706;--red:#dc2626;--purple:#7c3aed;--teal:#0f766e;--cyan:#0891b2;
+  --radius:12px;--radius-sm:8px;--shadow:0 1px 4px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.06);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.12);
+}
+body{background:var(--bg);font-size:13px;overflow-x:hidden}
+
+/* ── LOGIN ── */
+#loginPage{min-height:100vh;display:flex;align-items:stretch;background:var(--ink)}
+.login-left{flex:1;background:var(--ink);display:flex;flex-direction:column;justify-content:center;padding:64px;position:relative;overflow:hidden}
+.login-left::before{content:'';position:absolute;inset:0;background:url('https://amrock.b-cdn.net/category/amrock-9881725379130.jpg') center/cover;opacity:.12}
+.login-left::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(201,169,110,.15) 0%,transparent 60%)}
+.login-brand{position:relative;z-index:2}
+.login-brand img{height:52px;margin-bottom:24px}
+.login-brand h1{font-size:42px;font-weight:900;color:#fff;line-height:1.1;letter-spacing:-1px;margin-bottom:16px}
+.login-brand h1 span{color:var(--gold)}
+.login-brand p{font-size:15px;color:#475569;line-height:1.7;max-width:380px}
+.login-stats{position:relative;z-index:2;display:flex;gap:32px;margin-top:48px}
+.login-stat{text-align:left}
+.login-stat-val{font-size:28px;font-weight:900;color:var(--gold)}
+.login-stat-lbl{font-size:11px;color:#475569;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.login-right{width:460px;background:var(--surface);display:flex;align-items:center;justify-content:center;padding:48px}
+.lbox{width:100%;max-width:380px}
+.llogo img{height:40px;display:block;margin-bottom:24px}
+.llogo h2{font-size:24px;font-weight:900;color:var(--ink);margin-bottom:6px}
+.llogo p{font-size:13px;color:var(--slate2);margin-bottom:32px}
+.fg{margin-bottom:18px}
+.fg label{display:block;font-size:11px;font-weight:700;color:var(--slate);margin-bottom:6px;text-transform:uppercase;letter-spacing:.6px}
+.fg input{width:100%;padding:13px 16px;border:1.5px solid #e2e8f0;border-radius:var(--radius-sm);font-size:14px;color:var(--ink);outline:none;background:#fafafa;transition:.15s}
+.fg input:focus{border-color:var(--gold);background:#fff;box-shadow:0 0 0 3px rgba(201,169,110,.15)}
+.lbtn{width:100%;padding:14px;background:var(--ink);color:#fff;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.3px;transition:.15s;margin-top:4px}
+.lbtn:hover{background:var(--gold);color:var(--ink)}
+.lbtn:disabled{background:var(--slate2);cursor:not-allowed}
+.errbx{background:#fef2f2;color:#991b1b;border:1px solid #fecaca;padding:10px 14px;border-radius:var(--radius-sm);font-size:13px;margin-bottom:16px;display:none;text-align:center}
+@media(max-width:768px){.login-left{display:none}.login-right{width:100%;padding:28px}}
+
+/* ── LAYOUT ── */
+#dashPage{display:none;min-height:100vh}
+.layout{display:flex;min-height:100vh}
+
+/* ── SIDEBAR ── */
+.sidebar{width:248px;background:var(--ink2);min-height:100vh;position:fixed;top:0;left:0;bottom:0;z-index:300;display:flex;flex-direction:column;transition:transform .3s;border-right:1px solid rgba(255,255,255,.05)}
+.sb-logo{padding:20px 20px 16px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:12px}
+.sb-logo img{height:30px}
+.sb-logo-text{font-size:10px;color:#334155;text-transform:uppercase;letter-spacing:1.2px;font-weight:700;line-height:1.4}
+.sb-user{padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:10px}
+.sb-avatar{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--ink);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-uname{font-size:13px;font-weight:700;color:#e2e8f0;line-height:1.2}
+.sb-urole{font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
+.sb-section{font-size:9px;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:1.2px;padding:18px 20px 6px}
+.sb-item{display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:12px;font-weight:600;color:#475569;cursor:pointer;border-left:3px solid transparent;transition:.15s;user-select:none}
+.sb-item:hover{color:#cbd5e1;background:rgba(255,255,255,.04)}
+.sb-item.active{color:var(--gold);background:rgba(201,169,110,.08);border-left-color:var(--gold)}
+.sb-badge{margin-left:auto;background:#ef4444;color:#fff;font-size:9px;padding:1px 7px;border-radius:999px;font-weight:700}
+.sb-bottom{margin-top:auto;padding:16px 20px;border-top:1px solid rgba(255,255,255,.06)}
+.sb-version{font-size:10px;color:#334155;text-align:center;margin-bottom:6px;font-weight:700}
+.sb-refresh{font-size:11px;color:#475569;margin-bottom:8px;text-align:center}
+.sb-logout{width:100%;padding:9px;background:transparent;border:1px solid rgba(255,255,255,.1);color:#475569;border-radius:var(--radius-sm);cursor:pointer;font-size:12px;font-weight:600;transition:.15s}
+.sb-logout:hover{background:var(--gold);color:var(--ink);border-color:var(--gold)}
+
+/* ── MAIN ── */
+.main-content{margin-left:248px;flex:1;min-height:100vh}
+.topbar{background:var(--surface);border-bottom:1px solid #f0f0f0;padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 1px 0 #f0f0f0,0 2px 12px rgba(0,0,0,.04)}
+.topbar-title{font-size:17px;font-weight:800;color:var(--ink2)}
+.topbar-sub{font-size:11px;color:var(--slate2);margin-top:1px}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.search-wrap{position:relative}
+.search-input{padding:8px 14px 8px 34px;border:1.5px solid #e2e8f0;border-radius:999px;font-size:12px;color:var(--ink2);outline:none;width:210px;background:var(--surface2);transition:.15s}
+.search-input:focus{border-color:var(--blue);background:#fff;width:260px}
+.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:13px;pointer-events:none}
+.rbadge{font-size:10px;padding:3px 10px;border-radius:999px;font-weight:700}
+.mgmt{background:#dbeafe;color:#1e40af}
+.emp{background:#dcfce7;color:#166534}
+.topbar-btn{font-size:11px;color:var(--slate);background:var(--surface2);padding:5px 10px;border-radius:var(--radius-sm);cursor:pointer;border:1px solid #e2e8f0;font-weight:600}
+.topbar-btn:hover{background:#e2e8f0}
+
+/* ── PAGE CONTENT ── */
+.page-content{padding:20px 24px}
+
+/* ── HELP TOOLTIP ── */
+.help-btn{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#e2e8f0;color:var(--slate);font-size:10px;font-weight:700;cursor:pointer;border:none;margin-left:4px;vertical-align:middle}
+.help-btn:hover{background:var(--gold);color:var(--ink)}
+.tooltip-box{position:fixed;z-index:9999;background:var(--ink2);color:#e2e8f0;padding:12px 16px;border-radius:var(--radius-sm);font-size:12px;line-height:1.7;max-width:300px;box-shadow:var(--shadow-lg);display:none}
+.tooltip-box strong{color:var(--gold)}
+
+/* ── ALERT ── */
+.alert-banner{border-radius:var(--radius);padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.alert-red{background:#fef2f2;border:1px solid #fecaca}
+.alert-amber{background:#fffbeb;border:1px solid #fde68a}
+.alert-items{display:flex;gap:16px;flex-wrap:wrap}
+.alert-item{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;cursor:pointer}
+.alert-item:hover{opacity:.8}
+.alert-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* ── KPI GRID ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:16px}
+.kpi-card{background:var(--surface);border-radius:var(--radius);padding:16px;border:1px solid #ececec;cursor:pointer;transition:.2s;position:relative;overflow:hidden}
+.kpi-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kc-gold::before{background:linear-gradient(90deg,var(--gold),var(--gold-light))}
+.kc-green::before{background:linear-gradient(90deg,#16a34a,#4ade80)}
+.kc-amber::before{background:linear-gradient(90deg,#d97706,#fbbf24)}
+.kc-red::before{background:linear-gradient(90deg,#dc2626,#f87171)}
+.kc-purple::before{background:linear-gradient(90deg,#7c3aed,#a78bfa)}
+.kc-teal::before{background:linear-gradient(90deg,#0f766e,#2dd4bf)}
+.kpi-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.kpi-label{font-size:10px;font-weight:700;color:var(--slate);text-transform:uppercase;letter-spacing:.4px}
+.kpi-icon{font-size:20px;opacity:.8}
+.kpi-val{font-size:30px;font-weight:900;line-height:1;color:var(--ink2)}
+.kc-gold .kpi-val{color:#92400e}
+.kc-green .kpi-val{color:#15803d}
+.kc-amber .kpi-val{color:#b45309}
+.kc-red .kpi-val{color:#b91c1c}
+.kc-purple .kpi-val{color:#6d28d9}
+.kc-teal .kpi-val{color:#0f766e}
+.kpi-trend{font-size:10px;margin-top:6px;font-weight:600;color:var(--slate2)}
+.trend-up{color:#15803d}
+.trend-dn{color:#b91c1c}
+
+/* ── MOM STRIP ── */
+.mom-strip{background:var(--surface);border-radius:var(--radius);border:1px solid #ececec;padding:12px 20px;margin-bottom:16px;display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.mom-label{font-size:10px;font-weight:700;color:var(--slate);text-transform:uppercase;letter-spacing:.6px}
+.mom-item{font-size:12px;color:var(--ink2);font-weight:600;display:flex;align-items:center;gap:4px}
+
+/* ── SECTION HEADER ── */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.section-title{font-size:15px;font-weight:800;color:var(--ink2)}
+.section-badge{font-size:11px;background:var(--surface2);color:var(--slate);padding:3px 10px;border-radius:999px;font-weight:600;border:1px solid #e2e8f0}
+
+/* ── EMPLOYEE DAY CARD ── */
+.day-card{background:linear-gradient(135deg,var(--ink2) 0%,#1e293b 100%);border-radius:var(--radius);padding:20px 24px;margin-bottom:16px;display:none;position:relative;overflow:hidden}
+.day-card::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:rgba(201,169,110,.08)}
+.day-card-title{font-size:13px;font-weight:700;color:var(--gold);margin-bottom:14px;text-transform:uppercase;letter-spacing:.5px}
+.day-card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.day-stat{background:rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:12px 16px;text-align:center}
+.day-stat-val{font-size:28px;font-weight:900;color:#fff;line-height:1}
+.day-stat-lbl{font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:.4px;margin-top:4px;font-weight:600}
+
+/* ── SCORECARD ── */
+.sc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;margin-bottom:16px}
+.sc-card{background:var(--surface);border-radius:var(--radius);padding:16px;border:1px solid #ececec;cursor:pointer;transition:.2s;position:relative}
+.sc-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.sc-card.rank1{border-color:#f59e0b;border-width:2px}
+.sc-card.rank2{border-color:#94a3b8;border-width:2px}
+.sc-card.rank3{border-color:#cd7c2e;border-width:2px}
+.sc-top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.sc-avatar{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#dbeafe,#bfdbfe);color:var(--blue);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sc-name{font-size:13px;font-weight:700;color:var(--ink2)}
+.sc-meta{font-size:10px;color:var(--slate);margin-top:2px}
+.sc-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+.sc-stat{background:var(--surface2);border-radius:6px;padding:6px 4px;text-align:center}
+.sc-stat-val{font-size:14px;font-weight:800;color:var(--ink2)}
+.sc-stat-lbl{font-size:8px;color:var(--slate);text-transform:uppercase;font-weight:600}
+.sc-bar-wrap{background:#f1f5f9;border-radius:999px;height:4px;overflow:hidden;margin-bottom:6px}
+.sc-bar{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--blue),var(--purple));transition:width .6s}
+.sc-score{font-size:10px;font-weight:700;text-align:right}
+
+/* ── CHARTS ── */
+.charts-row{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:12px}
+.charts-row-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.chart-card{background:var(--surface);border-radius:var(--radius);padding:18px 20px;border:1px solid #ececec}
+.chart-title{font-size:13px;font-weight:800;color:var(--ink2);margin-bottom:2px}
+.chart-sub{font-size:11px;color:var(--slate2);margin-bottom:12px}
+.chart-wrap{position:relative;height:200px;cursor:pointer}
+.donut-wrap{position:relative;height:160px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.donut-center{position:absolute;text-align:center;pointer-events:none}
+.donut-center-val{font-size:22px;font-weight:900;color:var(--ink2)}
+.donut-center-lbl{font-size:9px;color:var(--slate2);font-weight:700;text-transform:uppercase}
+.legend{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.legend-item{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--slate);cursor:pointer;padding:2px 6px;border-radius:6px}
+.legend-item:hover{background:var(--surface2)}
+.legend-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* ── FILTER BAR ── */
+.filter-bar{background:var(--surface);border:1px solid #ececec;border-radius:var(--radius);padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.filter-label{font-size:11px;font-weight:700;color:var(--slate);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+.filter-bar select,.filter-bar input[type=date],.filter-bar input[type=text]{font-size:12px;padding:6px 10px;border:1.5px solid #e2e8f0;border-radius:var(--radius-sm);background:var(--surface2);color:var(--ink2);outline:none}
+.filter-bar select:focus,.filter-bar input:focus{border-color:var(--blue)}
+.filter-sep{font-size:11px;color:var(--slate2);font-weight:600}
+.fbtn{font-size:12px;padding:6px 14px;border:none;border-radius:var(--radius-sm);cursor:pointer;font-weight:700;white-space:nowrap}
+.fbtn-red{background:#fee2e2;color:#991b1b}.fbtn-red:hover{background:#fecaca}
+.fbtn-green{background:#dcfce7;color:#166534}.fbtn-green:hover{background:#bbf7d0}
+.fbtn-blue{background:#dbeafe;color:#1d4ed8}.fbtn-blue:hover{background:#bfdbfe}
+.fbtn-purple{background:#ede9fe;color:#6d28d9}.fbtn-purple:hover{background:#ddd6fe}
+.chip{display:inline-flex;align-items:center;gap:4px;background:#dbeafe;color:#1d4ed8;font-size:11px;padding:3px 8px;border-radius:999px;font-weight:700}
+.chip button{background:none;border:none;cursor:pointer;color:#1d4ed8;font-size:12px;line-height:1;padding:0}
+.chips-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+
+/* ── TABLE ── */
+.table-card{background:var(--surface);border-radius:var(--radius);border:1px solid #ececec;overflow:hidden;margin-bottom:16px;box-shadow:var(--shadow)}
+.tip{font-size:11px;color:var(--slate2);padding:7px 16px;border-bottom:1px solid var(--surface2);background:var(--surface2)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:var(--surface2);padding:9px 12px;text-align:left;font-weight:700;font-size:10px;color:var(--slate);border-bottom:2px solid #e2e8f0;white-space:nowrap;text-transform:uppercase;letter-spacing:.3px}
+td{padding:9px 12px;border-bottom:1px solid #f8fafc;color:var(--ink2);vertical-align:middle}
+.mrow{cursor:pointer}.mrow:hover td{background:#f8faff}
+.badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;padding:3px 8px;border-radius:999px;font-weight:700}
+.due{background:#fef9c3;color:#854d0e;border:1px solid #fde047}
+.done{background:#dcfce7;color:#166534;border:1px solid #86efac}
+.overdue{background:#fee2e2;color:#991b1b;border:1px solid #fca5a5}
+.overdue-dark{background:#dc2626;color:#fff}
+.upcoming{background:#ede9fe;color:#5b21b6;border:1px solid #c4b5fd}
+.nofup{background:#f1f5f9;color:var(--slate);border:1px solid #cbd5e1}
+.erow{display:flex;align-items:center;gap:7px}
+.edot{width:28px;height:28px;border-radius:8px;background:#eff6ff;color:var(--blue);font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1.5px solid #bfdbfe}
+.rmk{color:var(--slate);font-size:11px;max-width:140px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sub{color:var(--slate2);font-size:10px}
+.vt{font-size:9px;background:#f1f5f9;color:var(--slate);padding:2px 6px;border-radius:5px;font-weight:600}
+.pbtn{font-size:11px;padding:4px 9px;border:1px solid #bfdbfe;border-radius:6px;background:#eff6ff;color:var(--blue);text-decoration:none;white-space:nowrap;font-weight:600}
+.pbtn:hover{background:#dbeafe}
+.abtn{font-size:11px;padding:4px 9px;border:1px solid #e2e8f0;border-radius:6px;background:var(--surface2);color:var(--ink2);text-decoration:none;white-space:nowrap;font-weight:600}
+.abtn:hover{background:#dbeafe;color:var(--blue)}
+.wbtn{font-size:11px;padding:4px 9px;border:1px solid #bbf7d0;border-radius:6px;background:#dcfce7;color:#166534;text-decoration:none;white-space:nowrap;font-weight:600}
+.wbtn:hover{background:#bbf7d0}
+
+/* ── EXPAND ROW ── */
+.detail-expand{background:#f0f9ff;border-top:2px solid #bae6fd}
+.detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;font-size:12px;margin-bottom:12px}
+.dlbl{font-size:10px;color:var(--slate2);font-weight:700;text-transform:uppercase;margin-bottom:3px;letter-spacing:.3px}
+.hist-box{background:var(--surface2);border:1px solid #e2e8f0;border-radius:7px;padding:10px 12px;font-size:11px;line-height:1.8;color:var(--ink2);white-space:pre-wrap;word-break:break-word;max-height:150px;overflow-y:auto}
+/* road distance pill */
+.rdist{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:4px 10px;border-radius:999px;font-weight:700;background:#ede9fe;color:#6d28d9;border:1px solid #c4b5fd;margin-top:4px}
+.rdist.loading{background:#f1f5f9;color:var(--slate);border-color:#e2e8f0}
+.rdist.mismatch{background:#fef2f2;color:#991b1b;border-color:#fecaca}
+.rdist.match{background:#dcfce7;color:#166534;border-color:#86efac}
+
+/* ── DEAD CLIENTS ── */
+.dead-card{background:var(--surface);border-radius:var(--radius);border:1px solid #fecaca;padding:16px 18px;margin-bottom:16px}
+.dead-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:10px;margin-bottom:6px;background:#fef2f2;border:1px solid #fecaca;font-size:12px}
+.dead-row:hover{background:#fee2e2}
+.dead-client{font-weight:700;color:var(--ink2)}
+.dead-meta{color:var(--slate);font-size:11px;margin-top:2px}
+.dead-days{font-size:11px;font-weight:700;color:var(--red);background:#fee2e2;padding:2px 8px;border-radius:999px}
+
+/* ── MOB ── */
+.mob-card{display:none;background:var(--surface);border-radius:var(--radius);border:1px solid #e2e8f0;padding:14px;margin-bottom:10px;box-shadow:var(--shadow)}
+.mob-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.mob-client{font-size:15px;font-weight:700;color:var(--ink2)}
+.mob-sub{font-size:11px;color:var(--slate2);margin-top:2px}
+.mob-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.mob-field{background:var(--surface2);border-radius:var(--radius-sm);padding:7px 9px}
+.mob-field-lbl{font-size:10px;color:var(--slate2);font-weight:700;text-transform:uppercase;margin-bottom:2px}
+.mob-field-val{font-size:12px;color:var(--ink2);font-weight:600}
+.mob-actions{display:flex;gap:6px;flex-wrap:wrap}
+.mob-toggle{display:none;position:fixed;top:14px;left:14px;z-index:400;background:var(--ink2);color:#fff;border:none;border-radius:10px;padding:9px 13px;font-size:18px;cursor:pointer;box-shadow:var(--shadow-lg)}
+.footer{font-size:11px;color:var(--slate2);text-align:center;padding:16px 0 28px}
+
+/* ── KM VARIANCE in table ── */
+.km-ok{color:#15803d;font-weight:800}
+.km-over{color:#b91c1c;font-weight:800}
+.km-under{color:#b45309;font-weight:800}
+.km-na{color:var(--slate2);font-weight:600}
+
+@media(max-width:1200px){.kpi-grid{grid-template-columns:repeat(3,1fr)}.charts-row,.charts-row-3{grid-template-columns:1fr 1fr}}
+@media(max-width:900px){.charts-row{grid-template-columns:1fr}.charts-row-3{grid-template-columns:1fr}}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}
+  .main-content{margin-left:0}.mob-toggle{display:block}
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  table{display:none}.mob-card{display:block}
+  .detail-grid{grid-template-columns:1fr 1fr}
+  .page-content{padding:12px}.topbar{padding:0 16px}.mom-strip{display:none!important}
+}
+
+/* ── STATUS GUIDE PANEL ── */
+.guide-panel{background:var(--surface);border-radius:var(--radius);border:1px solid #ececec;padding:16px 20px;margin-bottom:16px;display:none}
+.guide-panel.show{display:block}
+.guide-title{font-size:13px;font-weight:800;color:var(--ink2);margin-bottom:12px}
+.guide-row{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;padding:10px 12px;background:var(--surface2);border-radius:var(--radius-sm)}
+.guide-badge{flex-shrink:0;margin-top:1px}
+.guide-desc{font-size:12px;line-height:1.6;color:var(--ink2)}
+.guide-desc b{color:var(--ink2)}
+</style>
+</head>
+<body>
+
+<!-- TOOLTIP BOX -->
+<div class="tooltip-box" id="ttBox"></div>
+
+<!-- LOGIN -->
+<div id="loginPage">
+  <div class="login-left">
+    <div class="login-brand">
+      <img src="https://www.amrockstone.com/assets/img/alogo.svg" alt="AMROCK" onerror="this.style.display='none'"/>
+      <h1>Field Visit<br><span>Intelligence</span></h1>
+      <p>Track team visits, follow-ups, KM, and performance — all in one powerful dashboard. Built for AMROCK Stone.</p>
+    </div>
+    <div class="login-stats">
+      <div class="login-stat"><div class="login-stat-val">15+</div><div class="login-stat-lbl">Years Strong</div></div>
+      <div class="login-stat"><div class="login-stat-val">Live</div><div class="login-stat-lbl">Data Sync</div></div>
+      <div class="login-stat"><div class="login-stat-val">360°</div><div class="login-stat-lbl">Analytics</div></div>
+    </div>
+  </div>
+  <div class="login-right">
+    <div class="lbox">
+      <div class="llogo">
+        <img src="https://www.amrockstone.com/assets/img/alogo.svg" alt="AMROCK" onerror="this.style.display='none'"/>
+        <h2>Welcome back</h2>
+        <p>Sign in to your CRM dashboard</p>
+      </div>
+      <div class="errbx" id="errBx">Invalid username or password.</div>
+      <div class="fg"><label>Username</label><input type="text" id="uname" placeholder="Enter username" autocomplete="username"/></div>
+      <div class="fg"><label>Password</label><input type="password" id="upass" placeholder="Enter password" autocomplete="current-password"/></div>
+      <button class="lbtn" id="lbtn">Sign In to Dashboard</button>
+      <div style="font-size:11px;color:#94a3b8;text-align:center;margin-top:20px;line-height:1.6">AMROCK Stone · Ahmedabad</div>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashPage">
+  <button class="mob-toggle" id="mobToggle">☰</button>
+  <div class="layout">
+    <div class="sidebar" id="sidebar">
+      <div class="sb-logo">
+        <img src="https://www.amrockstone.com/assets/img/alogo.svg" alt="AMROCK" onerror="this.style.display='none'"/>
+        <div class="sb-logo-text">AMROCK CRM<br>Field Intelligence</div>
+      </div>
+      <div class="sb-user">
+        <div class="sb-avatar" id="sbAvatar">MA</div>
+        <div><div class="sb-uname" id="sbName">-</div><div class="sb-urole" id="sbRole">-</div></div>
+      </div>
+      <div class="sb-section">Overview</div>
+      <div class="sb-item active" id="navDash" onclick="showSection('dash')">📊 Dashboard</div>
+      <div class="sb-item" id="navOverdue" onclick="showSection('overdue')">🔴 Overdue <span class="sb-badge" id="overdueCount">0</span></div>
+      <div class="sb-item" id="navDead" onclick="showSection('dead')" style="display:none">☠ Inactive Clients</div>
+      <div class="sb-section">Data</div>
+      <div class="sb-item" id="navAll" onclick="showSection('all')">📋 All Visits</div>
+      <div class="sb-item" id="navToday" onclick="showSection('today')">✅ Today's Visits</div>
+      <div class="sb-item" id="navPetrol" onclick="openPetrolModal()" style="display:none">⛽ Petrol Allowance</div>
+      <div class="sb-section">Help</div>
+      <div class="sb-item" id="navGuide" onclick="showSection('guide')">❓ How Status Works</div>
+      <div class="sb-bottom">
+        <div class="sb-version">v5.0 · Corporate Edition</div>
+        <div class="sb-refresh" id="refreshTimer">🔄 Auto-refresh on</div>
+        <button class="sb-logout" id="lgoutBtn">Logout</button>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="topbar">
+        <div>
+          <div class="topbar-title" id="pageTitle">Dashboard</div>
+          <div class="topbar-sub" id="pageSub">Loading...</div>
+        </div>
+        <div class="topbar-right">
+          <div class="search-wrap">
+            <span class="search-icon">🔍</span>
+            <input class="search-input" id="clF" placeholder="Search clients, sites, products..." oninput="updateAll()"/>
+          </div>
+          <span class="rbadge" id="rBadge"></span>
+          <span class="topbar-btn" id="refreshNowBtn" onclick="silentRefresh()" title="Refresh now">🔄 Refresh</span>
+        </div>
+      </div>
+
+      <div class="page-content">
+        <div id="alertBanner" style="display:none"></div>
+
+        <!-- EMPLOYEE DAY CARD -->
+        <div class="day-card" id="myDayCard">
+          <div class="day-card-title">👋 Your Day — <span id="dayCardDate"></span></div>
+          <div class="day-card-grid">
+            <div class="day-stat"><div class="day-stat-val" id="myTodayVisits">0</div><div class="day-stat-lbl">Visits Today</div></div>
+            <div class="day-stat"><div class="day-stat-val" id="myPendingFollowups" style="color:#fbbf24">0</div><div class="day-stat-lbl">Pending Follow-ups</div></div>
+            <div class="day-stat"><div class="day-stat-val" id="myTodayKm" style="color:#a78bfa">0</div><div class="day-stat-lbl">KM Today</div></div>
+          </div>
+        </div>
+
+        <!-- DASHBOARD SECTION -->
+        <div id="secDash">
+          <div class="mom-strip" id="momStrip" style="display:none">
+            <span class="mom-label">vs last month:</span>
+            <span class="mom-item" id="momVisits"></span>
+            <span class="mom-item" id="momKm"></span>
+            <span class="mom-item" id="momOverdue"></span>
+          </div>
+          <div class="kpi-grid">
+            <div class="kpi-card kc-gold" id="kpiAll"><div class="kpi-top"><div class="kpi-label">Visits this month</div><div class="kpi-icon">📋</div></div><div class="kpi-val" id="kT">0</div><div class="kpi-trend" id="kTrend">All-time: 0</div></div>
+            <div class="kpi-card kc-green" id="kpiToday"><div class="kpi-top"><div class="kpi-label">Visits today</div><div class="kpi-icon">✅</div></div><div class="kpi-val" id="kV">0</div><div class="kpi-trend" id="kVTrend">Click to view</div></div>
+            <div class="kpi-card kc-amber" id="kpiDue"><div class="kpi-top"><div class="kpi-label">Follow-ups due</div><div class="kpi-icon">🔔</div></div><div class="kpi-val" id="kD">0</div><div class="kpi-trend trend-up">Due today</div></div>
+            <div class="kpi-card kc-red" id="kpiOver"><div class="kpi-top"><div class="kpi-label">Overdue</div><div class="kpi-icon">⚠️</div></div><div class="kpi-val" id="kO">0</div><div class="kpi-trend" id="kOTrend">Click to view</div></div>
+            <div class="kpi-card kc-purple"><div class="kpi-top"><div class="kpi-label">KM this month</div><div class="kpi-icon">🚗</div></div><div class="kpi-val" id="kKM">0</div><div class="kpi-trend" style="color:#94a3b8">Road distance</div></div>
+            <div class="kpi-card kc-teal"><div class="kpi-top"><div class="kpi-label">Active employees</div><div class="kpi-icon">👥</div></div><div class="kpi-val" id="kEmp">0</div><div class="kpi-trend" style="color:#94a3b8" id="kEmpSub">With entries</div></div>
+          </div>
+          <div id="scorecardSection">
+            <div class="section-header">
+              <span class="section-title">Employee Performance</span>
+              <span class="section-badge" id="scNote">All time</span>
+            </div>
+            <div class="sc-grid" id="scorecardGrid"></div>
+          </div>
+          <div id="chartSection">
+            <div class="section-header" style="margin-bottom:12px">
+              <span class="section-title">Analytics</span>
+              <span class="section-badge" id="chartNote">All data</span>
+            </div>
+            <div class="charts-row">
+              <div class="chart-card"><div class="chart-title">Visits per Employee</div><div class="chart-sub">Click bar to filter</div><div class="chart-wrap"><canvas id="barChart"></canvas></div></div>
+              <div class="chart-card"><div class="chart-title">Follow-up Status</div><div class="chart-sub">Click slice to filter</div><div class="donut-wrap"><canvas id="donutChart"></canvas><div class="donut-center"><div class="donut-center-val" id="donutTotal">0</div><div class="donut-center-lbl">Total</div></div></div><div class="legend" id="donutLegend"></div></div>
+            </div>
+            <div class="charts-row-3">
+              <div class="chart-card"><div class="chart-title">Daily Trend — Last 14 Days</div><div class="chart-sub">Click point to filter by date</div><div class="chart-wrap"><canvas id="lineChart"></canvas></div></div>
+              <div class="chart-card"><div class="chart-title">Visit Type Breakdown</div><div class="chart-sub">Click slice to filter</div><div class="donut-wrap"><canvas id="typeChart"></canvas><div class="donut-center"><div class="donut-center-val" id="typeTot">0</div><div class="donut-center-lbl">Visits</div></div></div><div class="legend" id="typeLegend"></div></div>
+              <div class="chart-card"><div class="chart-title">KM per Employee</div><div class="chart-sub">This month · click to filter</div><div class="chart-wrap"><canvas id="kmChart"></canvas></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- OVERDUE SECTION -->
+        <div id="secOverdue" style="display:none">
+          <div class="section-header"><span class="section-title">🔴 Overdue Follow-ups</span><span class="section-badge" id="overdueRecCount">0 records</span></div>
+          <div class="table-card"><div class="tip">Sorted by most overdue first · Click any row to expand details</div>
+            <div style="overflow-x:auto"><table><thead id="overdueHead"></thead><tbody id="overdueBody"></tbody></table></div>
+          </div>
+        </div>
+
+        <!-- DEAD CLIENTS SECTION -->
+        <div id="secDead" style="display:none">
+          <div class="section-header"><span class="section-title">☠ Inactive Clients (30+ days)</span><span class="section-badge" id="deadCount">0 clients</span></div>
+          <div class="dead-card" id="deadList"></div>
+        </div>
+
+        <!-- ALL VISITS SECTION -->
+        <div id="secAll" style="display:none">
+          <div class="filter-bar">
+            <span class="filter-label">Filter:</span>
+            <select id="empF" style="display:none"><option value="">All employees</option></select>
+            <select id="stF"><option value="">All statuses</option><option>Due today</option><option>Overdue</option><option>Done</option><option>Upcoming</option><option>No follow-up</option></select>
+            <input type="date" id="dtFrom" title="From"/>
+            <span class="filter-sep">to</span>
+            <input type="date" id="dtTo" title="To"/>
+            <button class="fbtn fbtn-red" id="resetBtn">✕ Clear</button>
+            <button class="fbtn fbtn-green" id="exportBtn">⬇ Excel</button>
+            <button class="fbtn fbtn-purple" id="printBtn">🖨 Print</button>
+          </div>
+          <div class="chips-row" id="chipsRow"></div>
+          <div class="section-header"><span class="section-title">All Visit Entries</span><span class="section-badge" id="tableRecCount">0 records</span></div>
+          <div class="table-card"><div class="tip">Click any row to expand full details · Road distance auto-calculated from addresses</div>
+            <div style="overflow-x:auto"><table><thead id="tHead"></thead><tbody id="tBody"></tbody></table></div>
+          </div>
+          <div id="mobCards"></div>
+        </div>
+
+        <!-- TODAY SECTION -->
+        <div id="secToday" style="display:none">
+          <div class="section-header"><span class="section-title">✅ Today's Visits</span><span class="section-badge" id="todayCount">0 visits</span></div>
+          <div class="table-card"><div class="tip">Visits logged today</div>
+            <div style="overflow-x:auto"><table><thead id="todayHead"></thead><tbody id="todayBody"></tbody></table></div>
+          </div>
+          <div id="todayNotVisited" style="margin-top:16px"></div>
+        </div>
+
+        <!-- STATUS GUIDE SECTION -->
+        <div id="secGuide" style="display:none">
+          <div class="section-header"><span class="section-title">❓ How Follow-up Status Works</span></div>
+          <div class="guide-panel show">
+            <div class="guide-title">Status is calculated automatically from the follow-up date set during the visit entry.</div>
+            <div class="guide-row"><div class="guide-badge"><span class="badge done">🟢 Done</span></div><div class="guide-desc"><b>How it becomes Done:</b> When the employee opens the visit form via the ✏️ Edit button and sets the "Reminder Status" field to <b>Done</b> or <b>Sent</b>. This confirms the follow-up was completed.</div></div>
+            <div class="guide-row"><div class="guide-badge"><span class="badge upcoming">🔵 Upcoming</span></div><div class="guide-desc"><b>When:</b> A follow-up date is set in the future (after today) and status is not Done. The employee has a scheduled follow-up to do.</div></div>
+            <div class="guide-row"><div class="guide-badge"><span class="badge due">🟡 Due Today</span></div><div class="guide-desc"><b>When:</b> The follow-up date is exactly today and status is not Done. Action needed today!</div></div>
+            <div class="guide-row"><div class="guide-badge"><span class="badge overdue">🔴 Overdue</span></div><div class="guide-desc"><b>When:</b> The follow-up date has passed (before today) and status was never set to Done. The number in brackets (e.g. 5d) shows how many days overdue.</div></div>
+            <div class="guide-row"><div class="guide-badge"><span class="badge nofup">⚪ No Follow-up</span></div><div class="guide-desc"><b>When:</b> No follow-up date was set during the visit entry. The visit was informational or no action was needed.</div></div>
+            <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:var(--radius-sm);padding:12px 16px;margin-top:8px;font-size:12px;color:#92400e;line-height:1.7">
+              <b>⚡ To mark a follow-up as Done:</b> Go to All Visits → find the entry → click the ✏️ Edit button → update "Reminder Status" to Done in the Google Form.
+            </div>
+          </div>
+        </div>
+
+        <div class="footer">AMROCK CRM <span style="background:#1e293b;color:#38bdf8;font-size:10px;padding:2px 7px;border-radius:999px;font-weight:700;margin:0 4px">v5.0</span> Corporate Edition · © AMROCK Stone Ahmedabad</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PETROL MODAL -->
+<div id="petrolModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:16px;padding:28px;width:100%;max-width:440px;margin:20px;box-shadow:var(--shadow-lg)">
+    <div style="font-size:16px;font-weight:800;color:var(--ink2);margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid #f1f5f9">⛽ Petrol Allowance Report</div>
+    <div style="margin-bottom:14px">
+      <label style="font-size:12px;font-weight:700;color:var(--slate);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px">Employee</label>
+      <select id="petrolEmp" style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:var(--radius-sm);font-size:13px;color:var(--ink2);outline:none;background:#fff"><option value="">All employees</option></select>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px">
+      <div>
+        <label style="font-size:12px;font-weight:700;color:var(--slate);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px">From date</label>
+        <input type="date" id="petrolFrom" style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:var(--radius-sm);font-size:13px;color:var(--ink2);outline:none"/>
+      </div>
+      <div>
+        <label style="font-size:12px;font-weight:700;color:var(--slate);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px">To date</label>
+        <input type="date" id="petrolTo" style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:var(--radius-sm);font-size:13px;color:var(--ink2);outline:none"/>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button onclick="closePetrolModal()" style="padding:9px 20px;background:#f1f5f9;color:var(--ink2);border:none;border-radius:var(--radius-sm);font-size:13px;font-weight:700;cursor:pointer">Cancel</button>
+      <button onclick="generatePetrolReport()" style="padding:9px 20px;background:var(--ink2);color:#fff;border:none;border-radius:var(--radius-sm);font-size:13px;font-weight:700;cursor:pointer">Generate Report</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var SHEET_ID='1YfSGEeoqX_1zDudb4R70ln7zgL81chjo2su5mruCKDs';
+var SHEET_NAME='Form Responses 1';
+var USERS={
+  'gaurav':  {password:'1112',  role:'management',displayName:'Gaurav'},
+  'alpa':    {password:'80198', role:'management',displayName:'Alpa'},
+  'krishna': {password:'9737',  role:'management',displayName:'Krishna'},
+  'yash':    {password:'2528',  role:'management',displayName:'Yash'},
+  'manish':  {password:'1627',  role:'management',displayName:'Manish'},
+  'shraddha':{password:'3861',  role:'management',displayName:'Shraddha'},
+  'chirag':  {password:'Chirag42',  role:'employee',displayName:'Chirag', employeeName:'Chirag'},
+  'pratham': {password:'Pratham62', role:'employee',displayName:'Pratham',employeeName:'Pratham'},
+  'kiran':   {password:'Kiran23',   role:'employee',displayName:'Kiran',  employeeName:'Kiran'},
+  'het':     {password:'Het50',     role:'employee',displayName:'Het',    employeeName:'Het'},
+  'krish':   {password:'Krish10',   role:'employee',displayName:'Krish',  employeeName:'Krish'}
+};
+var ALL_ROWS=[],myRows=[],isMgmt=false,currentUser=null;
+var barInst=null,donutInst=null,lineInst=null,typeInst=null,kmInst=null;
+var lineDayLabels=[],refreshInterval=null,refreshCountdown=300;
+var currentSection='dash';
+var rdCache={};// road distance cache: "addr1|addr2" -> km
+
+// ─── UTILS ───
+function fmtToday(){var d=new Date();return pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear();}
+function fmtDate(d){return pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear();}
+function pad(n){return(n<10?'0':'')+n;}
+function normDate(val){if(!val)return'';var s=String(val).trim();var gm=s.match(/^Date\((\d+),(\d+),(\d+)\)$/);if(gm)return pad(+gm[3])+'/'+pad(parseInt(gm[2])+1)+'/'+gm[1];if(s.match(/^\d{4}-\d{2}-\d{2}$/)){var p=s.split('-');return p[2]+'/'+p[1]+'/'+p[0];}return s;}
+function ddToIso(dd){if(!dd)return'';var p=dd.split('/');if(p.length!==3)return'';return p[2]+'-'+p[1]+'-'+p[0];}
+function daysDiff(ddDate){if(!ddDate)return 0;var iso=ddToIso(ddDate);if(!iso)return 0;var then=new Date(iso),now=new Date();now.setHours(0,0,0,0);then.setHours(0,0,0,0);return Math.round((now-then)/86400000);}
+function getSt(r){if(!r.followupDate)return'No follow-up';if(r.status==='Sent'||r.status==='Done')return'Done';var tIso=ddToIso(fmtToday()),rIso=ddToIso(r.followupDate);if(!rIso)return'No follow-up';if(rIso===tIso)return'Due today';if(rIso<tIso)return'Overdue';return'Upcoming';}
+function getIn(n){if(!n)return'?';var p=n.trim().split(' ');return p.length>=2?(p[0][0]+p[1][0]).toUpperCase():n.substring(0,2).toUpperCase();}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function parseKm(v){var n=parseFloat(String(v||'0').replace(/[^0-9.]/g,''));return isNaN(n)?0:n;}
+function getMonthRows(rows,offset){var now=new Date(),y=now.getFullYear(),m=now.getMonth()+1+offset;while(m<1){m+=12;y--;}while(m>12){m-=12;y++;}var ym=y+'-'+(m<10?'0':'')+m;return rows.filter(function(r){return ddToIso(r.visitDate).indexOf(ym)===0;});}
+
+// ─── ROAD DISTANCE (OpenRouteService) ───
+function getRoadDistance(from,to,cb){
+  if(!from||!to||from.length<5||to.length<5){cb(null);return;}
+  var key=from.toLowerCase().trim()+'|'+to.toLowerCase().trim();
+  if(rdCache[key]!==undefined){cb(rdCache[key]);return;}
+  // Geocode both addresses then get route distance using OSRM (free, no key)
+  function geocode(addr,gcb){
+    fetch('https://nominatim.openstreetmap.org/search?format=json&q='+encodeURIComponent(addr+', India')+'&limit=1&addressdetails=0')
+      .then(function(r){return r.json();})
+      .then(function(d){if(d&&d[0]){gcb(parseFloat(d[0].lon),parseFloat(d[0].lat));}else{gcb(null,null);}})
+      .catch(function(){gcb(null,null);});
+  }
+  geocode(from,function(lon1,lat1){
+    if(!lon1){rdCache[key]=null;cb(null);return;}
+    geocode(to,function(lon2,lat2){
+      if(!lon2){rdCache[key]=null;cb(null);return;}
+      fetch('https://router.project-osrm.org/route/v1/driving/'+lon1+','+lat1+';'+lon2+','+lat2+'?overview=false')
+        .then(function(r){return r.json();})
+        .then(function(d){
+          if(d&&d.routes&&d.routes[0]){
+            var km=Math.round(d.routes[0].distance/1000*10)/10;
+            rdCache[key]=km;cb(km);
+          }else{rdCache[key]=null;cb(null);}
+        })
+        .catch(function(){rdCache[key]=null;cb(null);});
+    });
+  });
+}
+
+// ─── DATA FETCH ───
+function fetchSheetData(callback){
+  var cacheKey='amrock_rows_v5_'+SHEET_ID;
+  var url='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:json&sheet='+encodeURIComponent(SHEET_NAME)+'&t='+Date.now();
+  fetch(url)
+    .then(function(r){return r.text();})
+    .then(function(text){
+      var json=JSON.parse(text.replace(/^[^\(]+\(/,'').replace(/\);\s*$/,''));
+      var cols=json.table.cols.map(function(c){return c.label;});
+      var rows=[];
+      (json.table.rows||[]).forEach(function(row){
+        if(!row||!row.c)return;
+        var d={};
+        cols.forEach(function(col,i){d[col]=(row.c[i]&&row.c[i].v!=null)?String(row.c[i].v):'';});
+        if(!d['Name of Employee'])return;
+        rows.push({
+          employee:d['Name of Employee']||'',client:d['Name of Client']||'',clientType:d['Client Type']||'',
+          site:d['Site Name']||'',siteAddress:d['Site Address']||'',prevSiteAddress:d['Previous Site Name & Address']||'',
+          visitDate:normDate(d['Visit Date']),followupDate:normDate(d['Date of follow-up']),
+          followupNote:d['Note for Follow up']||'',remark:d['Remarks']||'',remarkHistory:d['Remark History']||'',
+          visitType:d['Visit Type']||'',status:d['Reminder Status']||'',editUrl:d['Edit Response URL']||'',
+          photos:d['Upload Site Photos']||'',mobile:d['Client Mobile No.']||'',reference:d['Reference']||'',
+          product:d['Product Name']||'',kilometers:d['Kilometers']||''
+        });
+      });
+      rows.reverse();
+      try{sessionStorage.setItem(cacheKey,JSON.stringify(rows));}catch(e){}
+      callback(rows);
+    })
+    .catch(function(){
+      try{var c=sessionStorage.getItem('amrock_rows_v5_'+SHEET_ID);if(c)callback(JSON.parse(c));else callback([]);}catch(e){callback([]);}
+    });
+}
+
+// ─── AUTO REFRESH ───
+function startAutoRefresh(){
+  if(refreshInterval)clearInterval(refreshInterval);
+  refreshCountdown=300;
+  refreshInterval=setInterval(function(){
+    refreshCountdown--;
+    var s=refreshCountdown%60;
+    if(refreshCountdown<=30){
+      document.getElementById('refreshTimer').textContent='🔄 Refresh in '+refreshCountdown+'s';
+      document.getElementById('refreshTimer').style.color='#f59e0b';
+    }else{
+      document.getElementById('refreshTimer').textContent='🔄 Auto-refresh on';
+      document.getElementById('refreshTimer').style.color='';
+    }
+    if(refreshCountdown<=0){refreshCountdown=300;silentRefresh();}
+  },1000);
+}
+function silentRefresh(){
+  document.getElementById('refreshTimer').textContent='🔄 Loading...';
+  fetchSheetData(function(rows){
+    if(!rows||!rows.length)return;
+    ALL_ROWS=rows;
+    myRows=isMgmt?ALL_ROWS:ALL_ROWS.filter(function(r){return r.employee.toLowerCase().indexOf(currentUser.employeeName.toLowerCase())>=0;});
+    updateAll();refreshCountdown=300;
+  });
+}
+
+// ─── SECTION ROUTING ───
+function showSection(sec){
+  currentSection=sec;
+  ['dash','overdue','dead','all','today','guide'].forEach(function(s){
+    var el=document.getElementById('sec'+s.charAt(0).toUpperCase()+s.slice(1));
+    if(el)el.style.display=sec===s?'block':'none';
+  });
+  ['navDash','navOverdue','navDead','navAll','navToday','navGuide'].forEach(function(id){
+    var el=document.getElementById(id);if(el)el.classList.remove('active');
+  });
+  var navMap={dash:'navDash',overdue:'navOverdue',dead:'navDead',all:'navAll',today:'navToday',guide:'navGuide'};
+  var el=document.getElementById(navMap[sec]);if(el)el.classList.add('active');
+  var titles={dash:'Dashboard',overdue:'Overdue Follow-ups',dead:'Inactive Clients',all:'All Visits',today:"Today's Visits",guide:'How Status Works'};
+  document.getElementById('pageTitle').textContent=titles[sec]||sec;
+  if(document.getElementById('sidebar').classList.contains('open'))document.getElementById('sidebar').classList.remove('open');
+  // Show/hide employee day card
+  var dc=document.getElementById('myDayCard');
+  if(dc)dc.style.display=(!isMgmt&&sec==='dash')?'block':'none';
+  updateAll();
+}
+
+// ─── FILTERS ───
+function getFilteredRows(){
+  var emp=isMgmt?document.getElementById('empF').value:'';
+  var st=document.getElementById('stF').value;
+  var dtFrom=document.getElementById('dtFrom').value,dtTo=document.getElementById('dtTo').value;
+  var cl=document.getElementById('clF').value.toLowerCase();
+  var src=isMgmt?ALL_ROWS:myRows;
+  return src.filter(function(r){
+    if(emp&&r.employee!==emp)return false;
+    if(st&&getSt(r)!==st)return false;
+    if(cl){var all=(r.client+' '+r.site+' '+r.mobile+' '+r.employee+' '+r.remark+' '+r.product+' '+r.reference+' '+r.siteAddress+' '+r.visitType).toLowerCase();if(all.indexOf(cl)<0)return false;}
+    if(dtFrom||dtTo){var iso=ddToIso(r.visitDate);if(dtFrom&&iso<dtFrom)return false;if(dtTo&&iso>dtTo)return false;}
+    return true;
+  });
+}
+
+// ─── MAIN UPDATE ───
+function updateAll(){
+  var rows=isMgmt?ALL_ROWS:myRows;
+  var today=fmtToday();
+  var overdue=rows.filter(function(r){return getSt(r)==='Overdue';});
+  document.getElementById('overdueCount').textContent=overdue.length;
+  updatePageSub();
+  updateAlertBanner(rows,today,overdue);
+  updateKPIs(rows,today,overdue);
+  updateMomStrip(rows);
+  if(isMgmt){buildScorecard(rows);buildCharts(rows);}
+  if(currentSection==='all'||currentSection==='dash')buildTable(getFilteredRows());
+  if(currentSection==='all')buildMobCards(getFilteredRows());
+  if(currentSection==='overdue')buildOverdueSection(overdue);
+  if(currentSection==='dead')buildDeadClients(rows);
+  if(currentSection==='today')buildTodaySection(rows,today);
+  updateChips();
+}
+
+function updatePageSub(){
+  var now=new Date();
+  var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('pageSub').textContent=days[now.getDay()]+', '+now.getDate()+' '+months[now.getMonth()]+' '+now.getFullYear();
+}
+
+function updateAlertBanner(rows,today,overdue){
+  var due=rows.filter(function(r){return getSt(r)==='Due today';});
+  if(!isMgmt){document.getElementById('alertBanner').style.display='none';return;}
+  if(overdue.length===0&&due.length===0){document.getElementById('alertBanner').style.display='none';return;}
+  var cls=overdue.length>0?'alert-banner alert-red':'alert-banner alert-amber';
+  var h='<div class="'+cls+'"><div class="alert-items">';
+  if(overdue.length>0)h+='<div class="alert-item" onclick="showSection(\'overdue\')"><div class="alert-dot" style="background:#dc2626"></div><span style="color:#991b1b">'+overdue.length+' overdue follow-up'+(overdue.length>1?'s':'')+'</span></div>';
+  if(due.length>0)h+='<div class="alert-item" onclick="document.getElementById(\'stF\').value=\'Due today\';showSection(\'all\');"><div class="alert-dot" style="background:#f59e0b"></div><span style="color:#92400e">'+due.length+' due today</span></div>';
+  h+='</div><span style="font-size:11px;color:#64748b">'+today+'</span></div>';
+  document.getElementById('alertBanner').innerHTML=h;
+  document.getElementById('alertBanner').style.display='block';
+}
+
+function updateKPIs(rows,today,overdue){
+  var tot=rows.length,tod=0,due=0,empSet={};
+  var thisMonthVisits=0,thisMonthKm=0;
+  var now=new Date(),ym=now.getFullYear()+'-'+pad(now.getMonth()+1);
+  rows.forEach(function(r){
+    if(r.visitDate===today)tod++;
+    var s=getSt(r);if(s==='Due today')due++;
+    if(r.employee)empSet[r.employee]=true;
+    var iso=ddToIso(r.visitDate);
+    if(iso&&iso.indexOf(ym)===0){thisMonthVisits++;thisMonthKm+=parseKm(r.kilometers);}
+  });
+  document.getElementById('kT').textContent=thisMonthVisits;
+  document.getElementById('kTrend').textContent='All-time: '+tot;
+  document.getElementById('kV').textContent=tod;
+  document.getElementById('kD').textContent=due;
+  document.getElementById('kO').textContent=overdue.length;
+  document.getElementById('kKM').textContent=Math.round(thisMonthKm).toLocaleString();
+  document.getElementById('kEmp').textContent=Object.keys(empSet).length;
+  document.getElementById('kOTrend').textContent=overdue.length>0?'Click to review':'✓ All clear!';
+  document.getElementById('kOTrend').className='kpi-trend '+(overdue.length>0?'trend-dn':'trend-up');
+  document.getElementById('kVTrend').textContent=tod>0?tod+' logged today':'None yet today';
+  document.getElementById('kVTrend').className='kpi-trend '+(tod>0?'trend-up':'');
+  // Employee day card
+  if(!isMgmt){
+    var dc=document.getElementById('myDayCard');
+    if(dc&&currentSection==='dash'){
+      dc.style.display='block';
+      var todKm=0;
+      rows.forEach(function(r){if(r.visitDate===today)todKm+=parseKm(r.kilometers);});
+      var pendingFup=rows.filter(function(r){var s=getSt(r);return s==='Due today'||s==='Overdue';}).length;
+      document.getElementById('myTodayVisits').textContent=tod;
+      document.getElementById('myPendingFollowups').textContent=pendingFup;
+      document.getElementById('myTodayKm').textContent=Math.round(todKm);
+      document.getElementById('dayCardDate').textContent=today;
+    }
+  }
+}
+
+function updateMomStrip(rows){
+  if(!isMgmt){document.getElementById('momStrip').style.display='none';return;}
+  var thisM=getMonthRows(rows,0),lastM=getMonthRows(rows,-1);
+  if(!lastM.length){document.getElementById('momStrip').style.display='none';return;}
+  function arrow(a,b,rev){var diff=a-b;if(diff===0)return'<span style="color:#64748b">— '+a+'</span>';var up=rev?(diff<0):(diff>0);return'<span style="color:'+(up?'#16a34a':'#dc2626')+'">'+(up?'↑':'↓')+' '+a+' ('+(diff>0?'+':'')+diff+')</span>';}
+  var tKm=0,lKm=0,tOv=0,lOv=0;
+  thisM.forEach(function(r){tKm+=parseKm(r.kilometers);if(getSt(r)==='Overdue')tOv++;});
+  lastM.forEach(function(r){lKm+=parseKm(r.kilometers);if(getSt(r)==='Overdue')lOv++;});
+  document.getElementById('momVisits').innerHTML='Visits: '+arrow(thisM.length,lastM.length,false);
+  document.getElementById('momKm').innerHTML='KM: '+arrow(Math.round(tKm),Math.round(lKm),false);
+  document.getElementById('momOverdue').innerHTML='Overdue: '+arrow(tOv,lOv,true);
+  document.getElementById('momStrip').style.display='flex';
+}
+
+function updateChips(){
+  var chips=[];
+  var emp=isMgmt?document.getElementById('empF').value:'';
+  var st=document.getElementById('stF').value,dtFrom=document.getElementById('dtFrom').value,dtTo=document.getElementById('dtTo').value,cl=document.getElementById('clF').value;
+  if(emp)chips.push({label:'Employee: '+emp,clear:function(){document.getElementById('empF').value='';updateAll();}});
+  if(st)chips.push({label:'Status: '+st,clear:function(){document.getElementById('stF').value='';updateAll();}});
+  if(dtFrom||dtTo){var fD=function(iso){if(!iso)return'...';var p=iso.split('-');return p[2]+'/'+p[1]+'/'+p[0];};chips.push({label:'Date: '+fD(dtFrom)+' – '+fD(dtTo),clear:function(){document.getElementById('dtFrom').value='';document.getElementById('dtTo').value='';updateAll();}});}
+  if(cl)chips.push({label:'Search: "'+cl+'"',clear:function(){document.getElementById('clF').value='';updateAll();}});
+  var row=document.getElementById('chipsRow');if(!row)return;row.innerHTML='';
+  chips.forEach(function(c,i){var div=document.createElement('div');div.className='chip';div.innerHTML=esc(c.label)+'<button onclick="clearChip('+i+')">✕</button>';row.appendChild(div);});
+  window._chipClears=chips.map(function(c){return c.clear;});
+  var cn=document.getElementById('chartNote');if(cn)cn.textContent=chips.length?chips.length+' filter'+(chips.length>1?'s':'')+' active':'All data';
+  var sn=document.getElementById('scNote');if(sn)sn.textContent=chips.length?'Filtered':'All time';
+}
+window.clearChip=function(i){if(window._chipClears&&window._chipClears[i])window._chipClears[i]();};
+
+// ─── SCORECARD ───
+function buildScorecard(rows){
+  var empData={},empLast={};
+  rows.forEach(function(r){
+    if(!r.employee)return;
+    if(!empData[r.employee])empData[r.employee]={visits:0,km:0,done:0,overdue:0};
+    empData[r.employee].visits++;
+    empData[r.employee].km+=parseKm(r.kilometers);
+    var s=getSt(r);
+    if(s==='Done')empData[r.employee].done++;
+    if(s==='Overdue')empData[r.employee].overdue++;
+    if(!empLast[r.employee]||r.visitDate>empLast[r.employee])empLast[r.employee]=r.visitDate;
+  });
+  var sorted=Object.keys(empData).sort(function(a,b){
+    var sA=Math.min(100,Math.round((empData[a].visits*0.4)+(empData[a].done*0.3)+((empData[a].visits>0?(1-empData[a].overdue/empData[a].visits):0)*30)));
+    var sB=Math.min(100,Math.round((empData[b].visits*0.4)+(empData[b].done*0.3)+((empData[b].visits>0?(1-empData[b].overdue/empData[b].visits):0)*30)));
+    return sB-sA;
+  });
+  var maxV=sorted.length?empData[sorted[0]].visits:1;
+  var rankClass=['rank1','rank2','rank3'],rankEmoji=['🥇','🥈','🥉'];
+  var html='';
+  sorted.forEach(function(name,i){
+    var d=empData[name],pct=Math.round((d.visits/maxV)*100);
+    var score=Math.min(100,Math.round((d.visits*0.4)+(d.done*0.3)+((d.visits>0?(1-d.overdue/d.visits):0)*30)));
+    var daysAgo=empLast[name]?daysDiff(empLast[name]):999;
+    var lastTxt=daysAgo===0?'Today':daysAgo===1?'Yesterday':daysAgo+'d ago';
+    var lastColor=daysAgo>7?'#dc2626':daysAgo>3?'#f59e0b':'#16a34a';
+    var compRate=d.visits>0?Math.round((d.done/d.visits)*100):0;
+    html+='<div class="sc-card '+(i<3?rankClass[i]:'')+'" onclick="filterByEmp(\''+esc(name)+'\')">';
+    html+='<div class="sc-top"><div class="sc-avatar">'+getIn(name)+'</div>';
+    html+='<div><div class="sc-name">'+(i<3?rankEmoji[i]+' ':'')+esc(name)+'</div><div class="sc-meta" style="color:'+lastColor+'">Last: '+lastTxt+'</div></div></div>';
+    html+='<div class="sc-stats">';
+    html+='<div class="sc-stat"><div class="sc-stat-val">'+d.visits+'</div><div class="sc-stat-lbl">Visits</div></div>';
+    html+='<div class="sc-stat"><div class="sc-stat-val">'+Math.round(d.km)+'</div><div class="sc-stat-lbl">KM</div></div>';
+    html+='<div class="sc-stat"><div class="sc-stat-val" style="color:#15803d">'+d.done+'</div><div class="sc-stat-lbl">Done</div></div>';
+    html+='<div class="sc-stat"><div class="sc-stat-val" style="color:'+(d.overdue>0?'#b91c1c':'#15803d')+'">'+d.overdue+'</div><div class="sc-stat-lbl">Overdue</div></div>';
+    html+='</div>';
+    html+='<div class="sc-bar-wrap"><div class="sc-bar" style="width:'+pct+'%"></div></div>';
+    html+='<div class="sc-score" style="color:'+(score>=70?'#15803d':score>=40?'#b45309':'#b91c1c')+'">Score: '+score+'/100 &nbsp;·&nbsp; Compliance: '+compRate+'%</div>';
+    html+='</div>';
+  });
+  document.getElementById('scorecardGrid').innerHTML=html||'<p style="color:#94a3b8;font-size:13px">No data.</p>';
+}
+window.filterByEmp=function(name){document.getElementById('empF').value=name;showSection('all');};
+
+// ─── CHARTS ───
+function buildCharts(rows){
+  var barColors=['#3b82f6','#8b5cf6','#ec4899','#f59e0b','#10b981','#06b6d4','#f97316','#84cc16'];
+  // Bar: visits per emp
+  var empC={};rows.forEach(function(r){if(r.employee)empC[r.employee]=(empC[r.employee]||0)+1;});
+  var eNames=Object.keys(empC).sort(function(a,b){return empC[b]-empC[a];});
+  var eVals=eNames.map(function(e){return empC[e];});
+  if(barInst)barInst.destroy();
+  barInst=new Chart(document.getElementById('barChart'),{type:'bar',
+    data:{labels:eNames,datasets:[{label:'Visits',data:eVals,backgroundColor:eNames.map(function(_,i){return barColors[i%barColors.length]+'bb';}),borderColor:eNames.map(function(_,i){return barColors[i%barColors.length];}),borderWidth:2,borderRadius:8,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,onClick:function(e,els){if(!els.length)return;document.getElementById('empF').value=eNames[els[0].index];showSection('all');},
+      plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:10},color:'#64748b'}},y:{grid:{color:'#f1f5f9'},ticks:{font:{size:10},color:'#64748b',stepSize:1},beginAtZero:true}}}
+  });
+  // Donut: status
+  var stC={'Due today':0,'Overdue':0,'Done':0,'Upcoming':0,'No follow-up':0};
+  rows.forEach(function(r){var s=getSt(r);if(stC[s]!==undefined)stC[s]++;});
+  var stL=['Due today','Overdue','Done','Upcoming','No follow-up'],stCol=['#f59e0b','#ef4444','#22c55e','#8b5cf6','#94a3b8'];
+  var stV=stL.map(function(l){return stC[l];});
+  document.getElementById('donutTotal').textContent=rows.length;
+  if(donutInst)donutInst.destroy();
+  donutInst=new Chart(document.getElementById('donutChart'),{type:'doughnut',
+    data:{labels:stL,datasets:[{data:stV,backgroundColor:stCol,borderWidth:3,borderColor:'#fff',hoverBorderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'68%',
+      onClick:function(e,els){if(!els.length)return;document.getElementById('stF').value=stL[els[0].index];showSection('all');},
+      plugins:{legend:{display:false}}}
+  });
+  var leg=document.getElementById('donutLegend');leg.innerHTML='';
+  stL.forEach(function(l,i){if(!stV[i])return;var div=document.createElement('div');div.className='legend-item';div.innerHTML='<div class="legend-dot" style="background:'+stCol[i]+'"></div>'+l+' ('+stV[i]+')';div.onclick=function(){document.getElementById('stF').value=l;showSection('all');};leg.appendChild(div);});
+  // Line: daily trend
+  var today=new Date(),days=[],dayL=[];
+  for(var i=13;i>=0;i--){var dd=new Date(today);dd.setDate(dd.getDate()-i);var fmt=fmtDate(dd);days.push(fmt);dayL.push(fmt.substring(0,5));}
+  lineDayLabels=days;
+  var dayC={};days.forEach(function(d){dayC[d]=0;});
+  rows.forEach(function(r){if(dayC[r.visitDate]!==undefined)dayC[r.visitDate]++;});
+  var lV=days.map(function(d){return dayC[d];});
+  if(lineInst)lineInst.destroy();
+  lineInst=new Chart(document.getElementById('lineChart'),{type:'line',
+    data:{labels:dayL,datasets:[{label:'Visits',data:lV,borderColor:'#3b82f6',backgroundColor:'rgba(59,130,246,.08)',borderWidth:2.5,pointBackgroundColor:'#3b82f6',pointRadius:4,pointHoverRadius:7,fill:true,tension:0.4}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      onClick:function(e,els){if(!els.length)return;var fd=lineDayLabels[els[0].index];var p=fd.split('/');document.getElementById('dtFrom').value=p[2]+'-'+p[1]+'-'+p[0];document.getElementById('dtTo').value=p[2]+'-'+p[1]+'-'+p[0];showSection('all');},
+      plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:9},color:'#94a3b8'}},y:{grid:{color:'#f8fafc'},ticks:{font:{size:10},color:'#64748b',stepSize:1},beginAtZero:true}}}
+  });
+  // Donut: visit type
+  var vtC={};rows.forEach(function(r){var v=r.visitType||'Unspecified';vtC[v]=(vtC[v]||0)+1;});
+  var vtL=Object.keys(vtC),vtV=vtL.map(function(l){return vtC[l];});
+  var vtCol=['#06b6d4','#8b5cf6','#f97316','#10b981','#ec4899','#f59e0b','#3b82f6'];
+  document.getElementById('typeTot').textContent=rows.length;
+  if(typeInst)typeInst.destroy();
+  typeInst=new Chart(document.getElementById('typeChart'),{type:'doughnut',
+    data:{labels:vtL,datasets:[{data:vtV,backgroundColor:vtCol.slice(0,vtL.length),borderWidth:3,borderColor:'#fff'}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'68%',
+      onClick:function(e,els){if(!els.length)return;document.getElementById('clF').value=vtL[els[0].index];showSection('all');},
+      plugins:{legend:{display:false}}}
+  });
+  var tleg=document.getElementById('typeLegend');tleg.innerHTML='';
+  vtL.forEach(function(l,i){var div=document.createElement('div');div.className='legend-item';div.innerHTML='<div class="legend-dot" style="background:'+vtCol[i%vtCol.length]+'"></div>'+l+' ('+vtV[i]+')';div.onclick=function(){document.getElementById('clF').value=l;showSection('all');};tleg.appendChild(div);});
+  // Bar: KM per emp this month
+  var now=new Date(),ym=now.getFullYear()+'-'+pad(now.getMonth()+1);
+  var monthRows=rows.filter(function(r){return ddToIso(r.visitDate).indexOf(ym)===0;});
+  var kmC={};monthRows.forEach(function(r){if(r.employee)kmC[r.employee]=(kmC[r.employee]||0)+parseKm(r.kilometers);});
+  var kNames=Object.keys(kmC).sort(function(a,b){return kmC[b]-kmC[a];});
+  var kVals=kNames.map(function(e){return Math.round(kmC[e]);});
+  if(kmInst)kmInst.destroy();
+  var kmCanvas=document.getElementById('kmChart');
+  if(kmCanvas){
+    kmInst=new Chart(kmCanvas,{type:'bar',
+      data:{labels:kNames,datasets:[{label:'KM',data:kVals,backgroundColor:'rgba(124,58,237,.6)',borderColor:'#7c3aed',borderWidth:2,borderRadius:8,borderSkipped:false}]},
+      options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
+        onClick:function(e,els){if(!els.length)return;document.getElementById('empF').value=kNames[els[0].index];showSection('all');},
+        plugins:{legend:{display:false}},scales:{x:{grid:{color:'#f1f5f9'},ticks:{font:{size:10},color:'#64748b'},beginAtZero:true},y:{grid:{display:false},ticks:{font:{size:10},color:'#64748b'}}}}
+    });
+  }
+}
+
+// ─── WHATSAPP ───
+function buildWhatsAppLink(r){
+  var fixed='919909980198';
+  var photo=r.photos?'\n📷 Photo: '+r.photos:'';
+  var msg='✅ *AMROCK CRM - Visit Entry*\n\n📋 *Client:* '+r.client+'\n🏗 *Site:* '+r.site+'\n📍 *Address:* '+(r.siteAddress||'-')+'\n📞 *Mobile:* '+(r.mobile||'-')+'\n📝 *Remarks:* '+(r.remark||'-')+'\n🚗 *KM:* '+(r.kilometers||'0')+' km'+photo+'\n\n_Sent from AMROCK CRM_';
+  return'https://wa.me/'+fixed+'?text='+encodeURIComponent(msg);
+}
+
+// ─── EXPAND ROW (with road distance) ───
+function buildExpandRow(r,fullId,colspan){
+  var hist=r.remarkHistory
+    ?'<div class="dlbl" style="margin-bottom:5px">📝 Remark History</div><div class="hist-box">'+esc(r.remarkHistory)+'</div>'
+    :'<div class="dlbl">📝 Remark History</div><div style="color:#94a3b8;font-size:12px;margin-top:4px">No history yet.</div>';
+  var h='<tr id="dx'+fullId+'" style="display:none" class="detail-expand"><td colspan="'+colspan+'" style="padding:14px 20px">';
+  h+='<div class="detail-grid">';
+  h+='<div><div class="dlbl">📍 Current Site Address</div><div style="font-size:12px">'+esc(r.siteAddress||'-')+'</div></div>';
+  h+='<div><div class="dlbl">🔄 Previous Site & Address</div><div style="font-size:12px">'+esc(r.prevSiteAddress||'-')+'</div></div>';
+  h+='<div><div class="dlbl">📱 Mobile</div><div style="font-size:12px">'+esc(r.mobile||'-')+'</div></div>';
+  h+='<div><div class="dlbl">🔗 Reference</div><div style="font-size:12px">'+esc(r.reference||'-')+'</div></div>';
+  h+='<div><div class="dlbl">📦 Product</div><div style="font-size:12px">'+esc(r.product||'-')+'</div></div>';
+  h+='<div><div class="dlbl">🚗 KM Logged vs Road Distance</div>';
+  h+='<div style="font-size:12px;font-weight:700;color:#7c3aed">'+esc(r.kilometers||'0')+' km (logged)';
+  if(r.prevSiteAddress&&r.siteAddress&&r.prevSiteAddress.length>5&&r.siteAddress.length>5){
+    h+='<span class="rdist loading" id="rdist_'+fullId+'">🗺 Calculating road distance...</span>';
+  }else{
+    h+='<span class="rdist" style="background:#f1f5f9;color:#94a3b8;border-color:#e2e8f0">📍 Add addresses to calculate road KM</span>';
+  }
+  h+='</div></div>';
+  h+='<div><div class="dlbl">📅 Follow-up Note</div><div style="font-size:12px">'+esc(r.followupNote||'-')+'</div></div>';
+  h+='</div><div>'+hist+'</div></td></tr>';
+  return h;
+}
+
+function loadRoadDistance(r,fullId){
+  if(!r.prevSiteAddress||!r.siteAddress||r.prevSiteAddress.length<5||r.siteAddress.length<5)return;
+  var el=document.getElementById('rdist_'+fullId);
+  if(!el)return;
+  var loggedKm=parseKm(r.kilometers);
+  getRoadDistance(r.prevSiteAddress,r.siteAddress,function(roadKm){
+    if(!el)return;
+    if(roadKm===null){
+      el.className='rdist';el.style.background='#f1f5f9';el.style.color='#94a3b8';el.style.borderColor='#e2e8f0';
+      el.textContent='🗺 Could not calculate road distance';
+      return;
+    }
+    var diff=loggedKm-roadKm;
+    var pct=roadKm>0?Math.round(Math.abs(diff)/roadKm*100):0;
+    if(Math.abs(diff)<=roadKm*0.15){
+      el.className='rdist match';el.textContent='✅ Road: '+roadKm+' km — matches logged';
+    }else if(diff>0){
+      el.className='rdist mismatch';el.textContent='⚠️ Road: '+roadKm+' km — logged '+diff.toFixed(1)+' km MORE ('+pct+'%)';
+    }else{
+      el.className='rdist';el.style.background='#fef9c3';el.style.color='#854d0e';el.style.borderColor='#fde047';
+      el.textContent='📋 Road: '+roadKm+' km — logged '+Math.abs(diff).toFixed(1)+' km less ('+pct+'%)';
+    }
+  });
+}
+
+// ─── TABLE ROW CLICK ───
+function attachRowClick(tbody){
+  tbody.onclick=function(e){
+    if(e.target.tagName==='A'||e.target.closest('a'))return;
+    var tr=e.target.closest('tr.mrow');if(!tr)return;
+    var idx=tr.getAttribute('data-idx');if(!idx)return;
+    var det=document.getElementById('dx'+idx);if(!det)return;
+    var op=det.style.display==='table-row';
+    det.style.display=op?'none':'table-row';
+    tr.style.background=op?'':'#f0f9ff';
+    if(!op){
+      var ri=parseInt(tr.getAttribute('data-ri')||'-1');
+      var src=isMgmt?ALL_ROWS:myRows;
+      if(ri>=0&&ri<src.length)loadRoadDistance(src[ri],idx);
+    }
+  };
+}
+
+// ─── SORT ───
+function sortNewestFirst(rows){return rows.slice().sort(function(a,b){return(ddToIso(b.visitDate)||'').localeCompare(ddToIso(a.visitDate)||'');});}
+
+// ─── BUILD TABLE ROWS ───
+function buildTableRows(rows,showEmp,prefix,srcRows){
+  prefix=prefix||'';
+  var sorted=sortNewestFirst(rows);
+  var html='';var totalKm=0;
+  // build a map from row data to original index for road distance
+  for(var j=0;j<sorted.length;j++){
+    var r=sorted[j],s=getSt(r);
+    var daysLate=s==='Overdue'?daysDiff(r.followupDate):0;
+    var bc=s==='Overdue'?'overdue':s==='Due today'?'due':s==='Done'?'done':s==='No follow-up'?'nofup':'upcoming';
+    if(s==='Overdue'&&daysLate>7)bc='overdue-dark';
+    var dot=s==='Overdue'?'🔴':s==='Due today'?'🟡':s==='Done'?'🟢':s==='No follow-up'?'⚪':'🔵';
+    var statusTxt=s+(s==='Overdue'&&daysLate>0?' ('+daysLate+'d)':'');
+    var pb=r.photos?'<a href="'+esc(r.photos)+'" target="_blank" class="pbtn" onclick="event.stopPropagation()">📷</a>':'—';
+    var ab=r.editUrl?'<a href="'+esc(r.editUrl)+'" target="_blank" class="abtn" onclick="event.stopPropagation()">✏️</a>':'';
+    var wb='<a href="'+esc(buildWhatsAppLink(r))+'" target="_blank" class="wbtn" onclick="event.stopPropagation()">💬</a>';
+    var km=parseKm(r.kilometers);totalKm+=km;
+    // find original index
+    var origIdx=-1;
+    if(srcRows){for(var k=0;k<srcRows.length;k++){if(srcRows[k]===r){origIdx=k;break;}}}
+    var co=showEmp?10:9;
+    var rowId=prefix+j;
+    html+='<tr class="mrow" data-idx="'+rowId+'" data-ri="'+origIdx+'">';
+    html+='<td style="color:#94a3b8;font-size:11px;font-weight:700;width:32px">'+(j+1)+'</td>';
+    if(showEmp)html+='<td><div class="erow"><div class="edot">'+getIn(r.employee)+'</div><span style="font-weight:600;font-size:12px">'+esc(r.employee)+'</span></div></td>';
+    html+='<td style="white-space:nowrap;font-size:12px;font-weight:600">'+esc(r.visitDate)+'<div style="margin-top:2px"><span class="vt">'+esc(r.visitType||'—')+'</span></div></td>';
+    html+='<td><div style="font-weight:700;font-size:12px">'+esc(r.client)+'</div><div class="sub">'+esc(r.mobile||'-')+'</div></td>';
+    html+='<td><div style="font-size:12px;font-weight:600">'+esc(r.site)+'</div><div class="sub">'+esc(r.siteAddress||'—')+'</div></td>';
+    html+='<td style="text-align:center"><div style="font-size:13px;font-weight:800;color:#7c3aed">'+km.toFixed(0)+'</div><div class="sub">km</div></td>';
+    html+='<td style="font-size:12px;color:#475569;max-width:150px;line-height:1.4">'+esc(r.product||'—')+'</td>';
+    html+='<td style="font-size:11px;color:#475569;max-width:150px;line-height:1.4">'+esc(r.remark||'—')+'</td>';
+    html+='<td style="white-space:nowrap;font-size:12px"><div style="font-weight:600">'+esc(r.followupDate||'—')+'</div><div style="margin-top:3px"><span class="badge '+bc+'" style="font-size:10px;padding:2px 6px">'+dot+' '+statusTxt+'</span></div></td>';
+    html+='<td style="white-space:nowrap">'+pb+'</td>';
+    html+='<td style="white-space:nowrap">'+wb+'&nbsp;'+ab+'</td></tr>';
+    html+=buildExpandRow(r,rowId,co);
+  }
+  if(sorted.length>0){
+    html+='<tr style="background:#f8fafc;border-top:2px solid #0f172a">';
+    html+='<td colspan="'+(showEmp?5:4)+'" style="padding:10px 12px;text-align:right;font-size:12px;font-weight:700">Total KM</td>';
+    html+='<td style="padding:10px 12px;font-size:15px;font-weight:900;color:#7c3aed;text-align:center">'+Math.round(totalKm)+'</td>';
+    html+='<td colspan="4"></td></tr>';
+  }
+  return html;
+}
+
+function buildTable(rows){
+  var showEmp=isMgmt;
+  var src=isMgmt?ALL_ROWS:myRows;
+  var h='<tr><th style="width:32px">#</th>'+(showEmp?'<th>Employee</th>':'')+'<th>Visit Date</th><th>Client & Mobile</th><th>Site & Address</th><th style="text-align:center">KM</th><th>Product</th><th>Remark</th><th>Follow-up & Status</th><th>Photo</th><th>Actions</th></tr>';
+  document.getElementById('tHead').innerHTML=h;
+  document.getElementById('tBody').innerHTML=buildTableRows(rows,showEmp,'',src)||'<tr><td colspan="11" style="text-align:center;padding:30px;color:#94a3b8">No records match filters.</td></tr>';
+  document.getElementById('tableRecCount').textContent=rows.length+' records';
+  attachRowClick(document.getElementById('tBody'));
+}
+
+function buildOverdueSection(overdue){
+  var sorted=overdue.slice().sort(function(a,b){return daysDiff(b.followupDate)-daysDiff(a.followupDate);});
+  var showEmp=isMgmt;
+  var h='<tr><th>#</th>'+(showEmp?'<th>Employee</th>':'')+'<th>Client</th><th>Site</th><th>Follow-up Date</th><th>Days Late</th><th>Remark</th><th>WhatsApp</th><th>Action</th></tr>';
+  document.getElementById('overdueHead').innerHTML=h;
+  var html='';
+  for(var j=0;j<sorted.length;j++){
+    var r=sorted[j],dl=daysDiff(r.followupDate);
+    var intensity=dl>14?'#7f1d1d':dl>7?'#991b1b':'#dc2626';
+    var ab=r.editUrl?'<a href="'+esc(r.editUrl)+'" target="_blank" class="abtn" onclick="event.stopPropagation()">✏️ Update</a>':'-';
+    var wb='<a href="'+esc(buildWhatsAppLink(r))+'" target="_blank" class="wbtn" onclick="event.stopPropagation()">💬</a>';
+    var co=showEmp?9:8;var ovId='ov'+j;
+    html+='<tr class="mrow" data-idx="'+ovId+'">';
+    html+='<td style="color:#94a3b8;font-size:11px;font-weight:700">'+(j+1)+'</td>';
+    if(showEmp)html+='<td><div class="erow"><div class="edot">'+getIn(r.employee)+'</div><span style="font-weight:600;font-size:12px">'+esc(r.employee)+'</span></div></td>';
+    html+='<td><div style="font-weight:700;font-size:12px">'+esc(r.client)+'</div><div class="sub">'+esc(r.clientType)+'</div></td>';
+    html+='<td style="font-size:12px">'+esc(r.site)+'</td>';
+    html+='<td style="font-weight:700;font-size:12px;color:#dc2626">'+esc(r.followupDate)+'</td>';
+    html+='<td><span style="background:'+intensity+';color:#fff;font-size:11px;padding:3px 10px;border-radius:999px;font-weight:700">'+dl+' days</span></td>';
+    html+='<td style="font-size:11px;color:#475569;max-width:150px">'+esc(r.remark||'-')+'</td>';
+    html+='<td>'+wb+'</td><td>'+ab+'</td></tr>';
+    html+=buildExpandRow(r,ovId,co);
+  }
+  document.getElementById('overdueBody').innerHTML=html||'<tr><td colspan="9" style="text-align:center;padding:30px;color:#16a34a;font-weight:700">🎉 No overdue entries!</td></tr>';
+  document.getElementById('overdueRecCount').textContent=sorted.length+' overdue';
+  attachRowClick(document.getElementById('overdueBody'));
+}
+
+function buildDeadClients(rows){
+  var clientLast={},clientData={};
+  rows.forEach(function(r){
+    if(!r.client)return;
+    if(!clientLast[r.client]||r.visitDate>clientLast[r.client]){clientLast[r.client]=r.visitDate;clientData[r.client]={remark:r.remark,employee:r.employee,mobile:r.mobile};}
+  });
+  var dead=[];
+  Object.keys(clientLast).forEach(function(cl){var d=daysDiff(clientLast[cl]);if(d>=30)dead.push({client:cl,days:d,lastDate:clientLast[cl],remark:clientData[cl].remark,employee:clientData[cl].employee,mobile:clientData[cl].mobile});});
+  dead.sort(function(a,b){return b.days-a.days;});
+  document.getElementById('deadCount').textContent=dead.length+' clients';
+  if(!dead.length){document.getElementById('deadList').innerHTML='<p style="color:#16a34a;font-weight:700;text-align:center;padding:20px">✅ All clients visited within last 30 days!</p>';return;}
+  var html='';
+  dead.forEach(function(d){
+    var wa='';
+    if(d.mobile){var mob=d.mobile.replace(/\D/g,'');if(mob.length===10)mob='91'+mob;var msg='Hello '+d.client+', This is AMROCK Stone. We would like to follow up. Please let us know if you need any assistance.';wa='<a href="https://wa.me/'+mob+'?text='+encodeURIComponent(msg)+'" target="_blank" class="wbtn" style="font-size:11px">💬 Re-engage</a>';}
+    var gfUrl='https://docs.google.com/forms/d/e/1FAIpQLSf0ZLCTmtLqiimFTr4VAnOJXD_wdP8hRCDMkR_a6dJEoMD3MA/viewform';
+    var assignBtn='<a href="'+gfUrl+'" target="_blank" class="abtn" style="font-size:11px">📋 Log Visit</a>';
+    html+='<div class="dead-row">';
+    html+='<div><div class="dead-client">'+esc(d.client)+'</div><div class="dead-meta">Last visit: '+esc(d.lastDate)+(d.employee?' · '+esc(d.employee):'')+'</div><div class="dead-meta" style="margin-top:2px">'+esc(d.remark||'-')+'</div></div>';
+    html+='<div style="display:flex;align-items:center;gap:8px"><span class="dead-days">'+d.days+' days ago</span>'+wa+assignBtn+'</div>';
+    html+='</div>';
+  });
+  document.getElementById('deadList').innerHTML=html;
+}
+
+function buildTodaySection(rows,today){
+  var todayRows=rows.filter(function(r){return r.visitDate===today;});
+  var showEmp=isMgmt;
+  var h='<tr><th>#</th>'+(showEmp?'<th>Employee</th>':'')+'<th>Client</th><th>Site</th><th>Type</th><th>Follow-up</th><th>Status</th><th>KM</th><th>Remark</th><th>WhatsApp</th><th>Action</th></tr>';
+  document.getElementById('todayHead').innerHTML=h;
+  var src=isMgmt?ALL_ROWS:myRows;
+  document.getElementById('todayBody').innerHTML=buildTableRows(todayRows,showEmp,'td',src)||'<tr><td colspan="11" style="text-align:center;padding:30px;color:#94a3b8">No visits logged today yet.</td></tr>';
+  document.getElementById('todayCount').textContent=todayRows.length+' visits';
+  attachRowClick(document.getElementById('todayBody'));
+  if(isMgmt){
+    var visited={};todayRows.forEach(function(r){visited[r.employee]=true;});
+    var allEmps={};rows.forEach(function(r){if(r.employee)allEmps[r.employee]=true;});
+    var notVisited=Object.keys(allEmps).filter(function(e){return!visited[e];});
+    var nv=document.getElementById('todayNotVisited');
+    if(notVisited.length>0){
+      var h2='<div style="background:#fff;border-radius:12px;border:1px solid #fde68a;padding:14px 18px">';
+      h2+='<div style="font-size:13px;font-weight:800;color:#92400e;margin-bottom:10px">⚠️ No entry today from:</div>';
+      h2+='<div style="display:flex;gap:8px;flex-wrap:wrap">';
+      notVisited.forEach(function(e){h2+='<span style="background:#fef3c7;color:#92400e;font-size:12px;padding:4px 12px;border-radius:999px;font-weight:700">'+esc(e)+'</span>';});
+      h2+='</div></div>';
+      nv.innerHTML=h2;
+    }else{
+      nv.innerHTML='<div style="background:#dcfce7;border-radius:12px;border:1px solid #86efac;padding:14px 18px;font-size:13px;font-weight:700;color:#166534">✅ All employees have logged at least one visit today!</div>';
+    }
+  }
+}
+
+function buildMobCards(rows){
+  var html='';
+  for(var j=0;j<rows.length;j++){
+    var r=rows[j],s=getSt(r);
+    var daysLate=s==='Overdue'?daysDiff(r.followupDate):0;
+    var bc=s==='Overdue'?'overdue':s==='Due today'?'due':s==='Done'?'done':s==='No follow-up'?'nofup':'upcoming';
+    var dot=s==='Overdue'?'🔴':s==='Due today'?'🟡':s==='Done'?'🟢':s==='No follow-up'?'⚪':'🔵';
+    var statusTxt=s+(s==='Overdue'&&daysLate>0?' ('+daysLate+'d)':'');
+    var wa=buildWhatsAppLink(r);
+    html+='<div class="mob-card"><div class="mob-card-top">';
+    html+='<div><div class="mob-client">'+esc(r.client)+'</div><div class="mob-sub">'+esc(r.clientType)+(r.employee&&isMgmt?' · '+esc(r.employee):'')+'</div></div>';
+    html+='<span class="badge '+bc+'">'+dot+' '+statusTxt+'</span></div>';
+    html+='<div class="mob-grid">';
+    html+='<div class="mob-field"><div class="mob-field-lbl">Site</div><div class="mob-field-val">'+esc(r.site||'-')+'</div></div>';
+    html+='<div class="mob-field"><div class="mob-field-lbl">Visit date</div><div class="mob-field-val">'+esc(r.visitDate||'-')+'</div></div>';
+    html+='<div class="mob-field"><div class="mob-field-lbl">Follow-up</div><div class="mob-field-val">'+esc(r.followupDate||'-')+'</div></div>';
+    html+='<div class="mob-field"><div class="mob-field-lbl">KM</div><div class="mob-field-val" style="color:#7c3aed">'+esc(r.kilometers||'0')+'</div></div>';
+    html+='</div>';
+    if(r.remark)html+='<div style="font-size:12px;color:#475569;margin-bottom:10px;line-height:1.5">'+esc(r.remark)+'</div>';
+    html+='<div class="mob-actions"><a href="'+esc(wa)+'" target="_blank" class="wbtn">💬 WhatsApp</a>';
+    if(r.photos)html+='<a href="'+esc(r.photos)+'" target="_blank" class="pbtn">📷 Photos</a>';
+    if(r.editUrl)html+='<a href="'+esc(r.editUrl)+'" target="_blank" class="abtn">✏️ Update</a>';
+    html+='</div></div>';
+  }
+  document.getElementById('mobCards').innerHTML=html;
+}
+
+// ─── EXPORT / PRINT ───
+document.getElementById('exportBtn').addEventListener('click',function(){
+  var rows=getFilteredRows();
+  var headers=['Employee','Client','Client Type','Site','Site Address','Visit Date','Follow-up Date','Status','Days Late','KM (Logged)','Visit Type','Remark','Mobile','Reference','Product','Follow-up Note'];
+  var wsData=[headers];
+  rows.forEach(function(r){
+    var s=getSt(r),dl=s==='Overdue'?daysDiff(r.followupDate):0;
+    wsData.push([r.employee,r.client,r.clientType,r.site,r.siteAddress,r.visitDate,r.followupDate,s,dl>0?dl+'d':'',r.kilometers,r.visitType,r.remark,r.mobile,r.reference,r.product,r.followupNote]);
+  });
+  if(typeof XLSX==='undefined'){alert('Please try again in a moment.');return;}
+  var wb=XLSX.utils.book_new();var ws=XLSX.utils.aoa_to_sheet(wsData);
+  ws['!cols']=headers.map(function(_,i){return{wch:i===11?30:16};});
+  XLSX.utils.book_append_sheet(wb,ws,'AMROCK CRM');
+  XLSX.writeFile(wb,'AMROCK_CRM_'+fmtToday().replace(/\//g,'-')+'.xlsx');
+});
+
+document.getElementById('printBtn').addEventListener('click',function(){
+  var rows=sortNewestFirst(getFilteredRows());var showEmp=isMgmt;var totalKm=0;
+  var empCol=showEmp?'<th>Employee</th>':'';
+  var tRows='';
+  rows.forEach(function(r,j){
+    var s=getSt(r),dl=s==='Overdue'?daysDiff(r.followupDate):0,km=parseKm(r.kilometers);totalKm+=km;
+    tRows+='<tr style="background:'+(j%2===0?'#fff':'#f8fafc')+'">';
+    tRows+='<td>'+(j+1)+'</td>';
+    if(showEmp)tRows+='<td>'+esc(r.employee)+'</td>';
+    tRows+='<td>'+esc(r.visitDate)+'</td>';
+    tRows+='<td><b>'+esc(r.client)+'</b><br><small>'+esc(r.mobile||'—')+'</small></td>';
+    tRows+='<td>'+esc(r.site)+'<br><small style="color:#64748b">'+esc(r.siteAddress||'—')+'</small></td>';
+    tRows+='<td style="color:#7c3aed;font-weight:700;text-align:right">'+km.toFixed(0)+'</td>';
+    tRows+='<td style="font-size:10px;color:#475569">'+esc(r.product||'—')+'</td>';
+    tRows+='<td style="font-size:10px">'+esc(r.remark||'—')+'</td>';
+    tRows+='<td>'+esc(r.followupDate||'—')+'<br><small style="color:'+(s==='Overdue'?'#dc2626':s==='Done'?'#16a34a':'#f59e0b')+'">'+s+(dl>0?' ('+dl+'d)':'')+'</small></td>';
+    tRows+='</tr>';
+  });
+  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>AMROCK CRM Report</title>'+
+    '<style>*{box-sizing:border-box;font-family:Arial,sans-serif}body{margin:16px;font-size:11px}'+
+    '.hdr{background:#0f172a;color:#fff;padding:14px 18px;border-radius:6px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}'+
+    '.hdr h1{font-size:16px;font-weight:800;margin:0}.hdr p{font-size:11px;color:#94a3b8;margin:3px 0 0}'+
+    'table{width:100%;border-collapse:collapse;font-size:10px}th{background:#0f172a;color:#fff;padding:7px 8px;text-align:left;font-size:9px;text-transform:uppercase}'+
+    'td{padding:6px 8px;border-bottom:1px solid #e2e8f0;vertical-align:top}tfoot td{background:#f8fafc;font-weight:700;border-top:2px solid #0f172a}'+
+    '.ft{margin-top:10px;font-size:9px;color:#94a3b8;text-align:center}@media print{body{margin:0}}</style></head><body>'+
+    '<div class="hdr"><div><h1>AMROCK CRM — Visit Report</h1><p>Generated: '+fmtToday()+' · '+rows.length+' records</p></div><div style="font-size:11px;color:#94a3b8">AMROCK Stone · Ahmedabad</div></div>'+
+    '<table><thead><tr><th>#</th>'+empCol+'<th>Visit date</th><th>Client & Mobile</th><th>Site & Address</th><th style="text-align:right">KM</th><th>Product</th><th>Remark</th><th>Follow-up & Status</th></tr></thead>'+
+    '<tbody>'+tRows+'</tbody>'+
+    '<tfoot><tr><td colspan="'+(showEmp?5:4)+'" style="text-align:right;padding:8px">Total KM:</td>'+
+    '<td style="padding:8px;font-size:13px;color:#7c3aed;text-align:right">'+Math.round(totalKm)+' km</td><td colspan="2"></td></tr></tfoot></table>'+
+    '<div class="ft">AMROCK Stone · Ahmedabad · AMROCK CRM v5.0</div></body></html>';
+  var w=window.open('','_blank');w.document.write(html);w.document.close();w.focus();setTimeout(function(){w.print();},400);
+});
+
+// ─── KPI CLICKS ───
+document.getElementById('kpiAll').addEventListener('click',function(){showSection('all');});
+document.getElementById('kpiToday').addEventListener('click',function(){showSection('today');});
+document.getElementById('kpiDue').addEventListener('click',function(){document.getElementById('stF').value='Due today';showSection('all');});
+document.getElementById('kpiOver').addEventListener('click',function(){showSection('overdue');});
+
+// ─── FILTER EVENTS ───
+document.getElementById('resetBtn').addEventListener('click',function(){
+  document.getElementById('empF').value='';document.getElementById('stF').value='';
+  document.getElementById('dtFrom').value='';document.getElementById('dtTo').value='';
+  document.getElementById('clF').value='';updateAll();
+});
+['empF','stF','dtFrom','dtTo'].forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener('change',updateAll);});
+
+// ─── MOBILE SIDEBAR ───
+document.getElementById('mobToggle').addEventListener('click',function(){document.getElementById('sidebar').classList.toggle('open');});
+document.addEventListener('click',function(e){
+  var sb=document.getElementById('sidebar'),tog=document.getElementById('mobToggle');
+  if(sb&&sb.classList.contains('open')&&!sb.contains(e.target)&&e.target!==tog)sb.classList.remove('open');
+});
+
+// ─── LOGIN ───
+document.getElementById('lbtn').addEventListener('click',function(){
+  var u=document.getElementById('uname').value.trim().toLowerCase();
+  var p=document.getElementById('upass').value.trim();
+  var user=USERS[u];
+  if(!user||user.password!==p){document.getElementById('errBx').style.display='block';return;}
+  document.getElementById('errBx').style.display='none';
+  document.getElementById('lbtn').textContent='Loading data...';
+  document.getElementById('lbtn').disabled=true;
+  currentUser=user;isMgmt=user.role==='management';
+  fetchSheetData(function(rows){
+    ALL_ROWS=rows;
+    myRows=isMgmt?ALL_ROWS:ALL_ROWS.filter(function(r){return r.employee.toLowerCase().indexOf(user.employeeName.toLowerCase())>=0;});
+    document.getElementById('loginPage').style.display='none';
+    document.getElementById('dashPage').style.display='block';
+    var rb=document.getElementById('rBadge');rb.textContent=isMgmt?'Management':'Employee';rb.className='rbadge '+(isMgmt?'mgmt':'emp');
+    document.getElementById('sbName').textContent=user.displayName;
+    document.getElementById('sbAvatar').textContent=getIn(user.displayName);
+    document.getElementById('sbRole').textContent=isMgmt?'Management':'Employee';
+    if(isMgmt){
+      var ef=document.getElementById('empF');ef.style.display='inline-block';
+      var seen={};ALL_ROWS.forEach(function(r){if(r.employee&&!seen[r.employee]){seen[r.employee]=true;var o=document.createElement('option');o.value=r.employee;o.textContent=r.employee;ef.appendChild(o);}});
+      document.getElementById('scorecardSection').style.display='block';
+      document.getElementById('chartSection').style.display='block';
+      document.getElementById('navDead').style.display='flex';
+      document.getElementById('navPetrol').style.display='flex';
+    }else{
+      document.getElementById('scorecardSection').style.display='none';
+      document.getElementById('chartSection').style.display='none';
+      document.getElementById('navDead').style.display='none';
+      document.getElementById('navOverdue').style.display='none';
+    }
+    updateAll();startAutoRefresh();
+    document.getElementById('lbtn').textContent='Sign In to Dashboard';
+    document.getElementById('lbtn').disabled=false;
+  });
+});
+document.getElementById('upass').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('lbtn').click();});
+
+// ─── LOGOUT ───
+document.getElementById('lgoutBtn').addEventListener('click',function(){
+  if(refreshInterval)clearInterval(refreshInterval);
+  document.getElementById('dashPage').style.display='none';
+  document.getElementById('loginPage').style.display='flex';
+  document.getElementById('uname').value='';document.getElementById('upass').value='';
+  document.getElementById('empF').style.display='none';
+  ALL_ROWS=[];myRows=[];isMgmt=false;currentUser=null;rdCache={};
+  showSection('dash');
+});
+
+// ─── PETROL REPORT (FIXED - variables declared before use) ───
+window.openPetrolModal=function(){
+  var sel=document.getElementById('petrolEmp');
+  sel.innerHTML='<option value="">All employees</option>';
+  var seen={};
+  (isMgmt?ALL_ROWS:myRows).forEach(function(r){
+    if(r.employee&&!seen[r.employee]){seen[r.employee]=true;var o=document.createElement('option');o.value=r.employee;o.textContent=r.employee;sel.appendChild(o);}
+  });
+  document.getElementById('petrolModal').style.display='flex';
+};
+window.closePetrolModal=function(){document.getElementById('petrolModal').style.display='none';};
+
+window.generatePetrolReport=function(){
+  var empFilter=document.getElementById('petrolEmp').value;
+  // FIX: declare fmtFrom/fmtTo BEFORE building bodyHtml
+  var fromDate=document.getElementById('petrolFrom').value;
+  var toDate=document.getElementById('petrolTo').value;
+  var fmtFrom=fromDate?fromDate.split('-').reverse().join('/'):'Start';
+  var fmtTo=toDate?toDate.split('-').reverse().join('/'):'Today';
+
+  var src=isMgmt?ALL_ROWS:myRows;
+  var rows=src.filter(function(r){
+    if(empFilter&&r.employee!==empFilter)return false;
+    if(fromDate||toDate){var iso=ddToIso(r.visitDate);if(fromDate&&iso<fromDate)return false;if(toDate&&iso>toDate)return false;}
+    return true;
+  });
+  if(!rows.length){alert('No records found for selected filters.');return;}
+
+  var byEmp={};
+  rows.forEach(function(r){if(!byEmp[r.employee])byEmp[r.employee]=[];byEmp[r.employee].push(r);});
+  var empNames=Object.keys(byEmp).sort();
+  var bodyHtml='';var grandTotal=0;
+
+  empNames.forEach(function(emp){
+    var empRows=byEmp[emp];
+    empRows.sort(function(a,b){return ddToIso(a.visitDate).localeCompare(ddToIso(b.visitDate));});
+    var empKm=0;var tRows='';
+    var thS='padding:7px 10px;text-align:left;font-size:9px;text-transform:uppercase;color:#64748b;border-bottom:1px solid #e2e8f0;letter-spacing:.3px;font-weight:700';
+    for(var i=0;i<empRows.length;i++){
+      var r=empRows[i];var km=parseKm(r.kilometers);empKm+=km;grandTotal+=km;
+      var prevSite=r.prevSiteAddress||'—';
+      var rdKey=r.prevSiteAddress&&r.siteAddress?(r.prevSiteAddress.toLowerCase().trim()+'|'+r.siteAddress.toLowerCase().trim()):null;
+      var rdVal=rdKey&&rdCache[rdKey]!==undefined?rdCache[rdKey]:null;
+      var rdCell='';
+      if(rdVal!==null&&rdVal!==undefined){
+        var diff=km-rdVal;
+        if(Math.abs(diff)<=rdVal*0.15)rdCell='<span style="background:#dcfce7;color:#166534;font-size:10px;padding:2px 7px;border-radius:999px;font-weight:700;margin-left:6px">✅ Road: '+rdVal+' km</span>';
+        else if(diff>0)rdCell='<span style="background:#fee2e2;color:#991b1b;font-size:10px;padding:2px 7px;border-radius:999px;font-weight:700;margin-left:6px">⚠️ Road: '+rdVal+' km</span>';
+        else rdCell='<span style="background:#fef9c3;color:#854d0e;font-size:10px;padding:2px 7px;border-radius:999px;font-weight:700;margin-left:6px">📋 Road: '+rdVal+' km</span>';
+      }
+      tRows+='<tr style="background:'+(i%2===0?'#fff':'#f8fafc')+'">';
+      tRows+='<td style="padding:7px 10px;color:#94a3b8;font-size:10px;width:28px">'+(i+1)+'</td>';
+      tRows+='<td style="padding:7px 10px;font-size:11px;white-space:nowrap;font-weight:600">'+esc(r.visitDate)+'</td>';
+      tRows+='<td style="padding:7px 10px;font-weight:700;font-size:11px">'+esc(r.client)+'<div style="font-size:9px;color:#94a3b8;margin-top:1px">'+esc(r.site)+'</div></td>';
+      tRows+='<td style="padding:7px 10px;font-size:10px;color:#475569;max-width:160px">'+esc(r.siteAddress||'—')+'</td>';
+      tRows+='<td style="padding:7px 10px;font-size:10px;color:#475569;max-width:160px">'+esc(prevSite)+'</td>';
+      tRows+='<td style="padding:7px 10px;text-align:right"><span style="font-weight:800;color:#7c3aed;font-size:13px">'+km.toFixed(0)+'</span>'+rdCell+'</td>';
+      tRows+='</tr>';
+    }
+    var empDates=empRows.map(function(r){return ddToIso(r.visitDate);}).filter(Boolean).sort();
+    var empFrom=empDates.length?empDates[0].split('-').reverse().join('/'):'—';
+    var empTo=empDates.length?empDates[empDates.length-1].split('-').reverse().join('/'):'—';
+    bodyHtml+=
+      '<div style="margin-bottom:28px;page-break-inside:avoid">'+
+      '<table style="width:100%;border-collapse:collapse;border:1px solid #e2e8f0;border-radius:6px;overflow:hidden">'+
+      '<thead>'+
+      '<tr><td colspan="6" style="background:#0f172a;color:#fff;padding:11px 14px">'+
+      '<div style="display:flex;justify-content:space-between;align-items:center">'+
+      '<span style="font-size:14px;font-weight:800">'+esc(emp)+'</span>'+
+      '<span style="font-size:11px;color:#94a3b8">'+empFrom+' — '+empTo+' &nbsp;·&nbsp; '+empRows.length+' visits &nbsp;·&nbsp; Total: <b style="color:#38bdf8">'+empKm.toFixed(0)+' km</b></span>'+
+      '</div></td></tr>'+
+      '<tr style="background:#f8fafc"><th style="'+thS+';width:28px">#</th><th style="'+thS+'">Date</th><th style="'+thS+'">Client / Site</th><th style="'+thS+'">Current Site Address</th><th style="'+thS+'">Previous Site</th><th style="'+thS+';text-align:right">KM (Logged vs Road)</th></tr>'+
+      '</thead><tbody>'+tRows+'</tbody>'+
+      '<tfoot><tr style="background:#eff6ff;border-top:2px solid #3b82f6">'+
+      '<td colspan="5" style="padding:9px 14px;text-align:right;font-weight:700;font-size:11px">Total KM — '+esc(emp)+'</td>'+
+      '<td style="padding:9px 14px;font-weight:900;font-size:16px;color:#7c3aed;text-align:right">'+empKm.toFixed(0)+' km</td>'+
+      '</tr></tfoot></table></div>';
+  });
+
+  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Petrol Allowance — AMROCK Stone</title>'+
+    '<style>*{box-sizing:border-box;font-family:Arial,sans-serif}body{margin:0;padding:18px;font-size:12px;color:#0f172a}'+
+    '.hdr{background:#0f172a;color:#fff;padding:16px 20px;border-radius:8px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-start}'+
+    '.hdr h1{font-size:17px;font-weight:800;margin:0 0 4px}.hdr p{font-size:10px;color:#94a3b8;margin:0}'+
+    '.hdr-right{text-align:right;font-size:10px;color:#64748b;line-height:1.6}'+
+    '.grand{background:#0f172a;color:#fff;padding:16px 20px;border-radius:8px;margin-top:20px;display:flex;justify-content:space-between;align-items:center}'+
+    '.g-lbl{font-size:12px;color:#94a3b8;line-height:1.5}.g-val{font-size:26px;font-weight:900;color:#38bdf8}'+
+    '.legend-note{font-size:10px;color:#64748b;margin-top:14px;padding:10px 14px;background:#f8fafc;border-radius:6px;border:1px solid #e2e8f0}'+
+    '.ft{margin-top:10px;font-size:9px;color:#94a3b8;text-align:center;border-top:1px solid #e2e8f0;padding-top:8px}'+
+    '@media print{body{padding:8px}}</style></head><body>'+
+    '<div class="hdr">'+
+    '<div><h1>⛽ Petrol Allowance Report</h1><p>Period: '+fmtFrom+' to '+fmtTo+' &nbsp;·&nbsp; '+rows.length+' visits &nbsp;·&nbsp; '+empNames.length+' employee'+(empNames.length>1?'s':'')+'</p></div>'+
+    '<div class="hdr-right">AMROCK Stone<br>Ahmedabad<br>Generated: '+fmtToday()+'</div>'+
+    '</div>'+
+    bodyHtml+
+    '<div class="legend-note">'+
+    '🟢 <b>Road: X km</b> = Logged KM matches actual road distance (within 15%) &nbsp;|&nbsp; '+
+    '🔴 <b>Road: X km</b> = Logged KM significantly higher than road distance &nbsp;|&nbsp; '+
+    '🟡 <b>Road: X km</b> = Logged KM lower than road distance<br>'+
+    'Road distances calculated via OpenStreetMap routing where addresses were available.'+
+    '</div>'+
+    '<div class="grand"><div class="g-lbl">Grand Total KM<br><small style="color:#475569">'+empNames.join(' · ')+'</small></div><div class="g-val">'+Math.round(grandTotal)+' km</div></div>'+
+    '<div class="ft">AMROCK Stone &middot; Ahmedabad &middot; Petrol Allowance Report &middot; AMROCK CRM v5.0 &middot; '+fmtToday()+'</div>'+
+    '</body></html>';
+
+  closePetrolModal();
+  var w=window.open('','_blank');
+  if(!w){alert('Please allow popups for this site to view the report.');return;}
+  w.document.write(html);w.document.close();w.focus();
+  setTimeout(function(){w.print();},500);
+};
+</script>
+</body>
+</html>
