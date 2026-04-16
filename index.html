@@ -1790,6 +1790,9 @@ body:hover .cursor-glow{opacity:1}
 <script>
 var SHEET_ID='1YfSGEeoqX_1zDudb4R70ln7zgL81chjo2su5mruCKDs';
 var SHEET_NAME='Form Responses 1';
+// Published sheet config (used when original sheet is private)
+var PUB_SHEET_ID='2PACX-1vSd7e330uNh9gCH9OD9nLcGag9_PbtzV7V7ZJmL2PyMI1Fov4APTxKPs6BeDqWVS1JawWdMrZW_ZOhv';
+var PUB_GID='492558843';
 var USERS={
   'gaurav':{password:'1112',role:'management',displayName:'Gaurav'},
   'alpa':{password:'80198',role:'management',displayName:'Alpa'},
@@ -1940,12 +1943,28 @@ function fetchData(cb){
   var loadingEl=document.getElementById('loadingOverlay');
   if(loadingEl)loadingEl.style.display='flex';
   var ck='amrock_v8_'+SHEET_ID;
-  var url='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:json&sheet='+encodeURIComponent(SHEET_NAME)+'&t='+Date.now();
+  // Try published URL (works even when original sheet sharing is restricted)
+  var url='https://docs.google.com/spreadsheets/d/e/'+PUB_SHEET_ID+'/gviz/tq?tqx=out:json&gid='+PUB_GID+'&t='+Date.now();
+  var urlFallback='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:json&sheet='+encodeURIComponent(SHEET_NAME)+'&t='+Date.now();
   function hideLoad(){if(loadingEl)loadingEl.style.display='none';}
-  function showDataError(msg){
+  function showDataError(msg,is403){
     hideLoad();
     var errDiv=document.getElementById('dataErrBanner');
-    if(errDiv){errDiv.innerHTML='<span>\u26A0\uFE0F '+msg+'</span> <button onclick="silentRefresh();this.parentNode.style.display=\'none\'" style="margin-left:12px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:4px 12px;border-radius:6px;cursor:pointer;font-family:\'Sora\',sans-serif;font-size:11px">\uD83D\uDD04 Retry</button>';errDiv.style.display='flex';}
+    if(!errDiv)return;
+    var inner='<div style="flex:1">';
+    if(is403){
+      inner+='<div style="font-weight:700;font-size:13px;margin-bottom:5px">\uD83D\uDD12 Google Sheet is private \u2014 data cannot load</div>';
+      inner+='<div style="font-size:11px;line-height:1.8;opacity:.9">';
+      inner+='<b>Fix in 2 steps:</b> 1. Open your Google Sheet &rarr; click <b>Share</b> (top right) &rarr; change to <b>Anyone with the link</b> as <b>Viewer</b>. ';
+      inner+='2. Also go to <b>File &rarr; Share &rarr; Publish to web</b> &rarr; Publish the entire document.';
+      inner+='</div>';
+    }else{
+      inner+='<span style="font-weight:600">\u26A0\uFE0F '+msg+'</span>';
+    }
+    inner+='</div>';
+    inner+='<button onclick="silentRefresh();document.getElementById(\'dataErrBanner\').style.display=\'none\'" style="flex-shrink:0;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:6px 16px;border-radius:8px;cursor:pointer;font-family:\'Sora\',sans-serif;font-size:12px;font-weight:600;white-space:nowrap">\uD83D\uDD04 Retry</button>';
+    errDiv.innerHTML=inner;
+    errDiv.style.display='flex';
   }
   function parseRows(text){
     // Strip the Google wrapper: google.visualization.Query.setResponse({...});
@@ -1979,11 +1998,9 @@ function fetchData(cb){
     rows.reverse();
     return rows;
   }
-  fetch(url)
-    .then(function(r){
-      if(!r.ok)throw new Error('HTTP '+r.status);
-      return r.text();
-    })
+  // Try published URL first, fall back to original sheet URL
+  var _fetchOne=function(u){return fetch(u).then(function(r){if(!r.ok){var e=new Error('HTTP '+r.status);e.status=r.status;throw e;}return r.text();});};
+  _fetchOne(url).catch(function(){return _fetchOne(urlFallback);})
     .then(function(text){
       hideLoad();
       var rows=parseRows(text);
@@ -1992,19 +2009,20 @@ function fetchData(cb){
       cb(rows);
     })
     .catch(function(err){
-      // Try sessionStorage cache
+      var is403=err&&(err.status===403||String(err.message).indexOf('403')>=0);
+      // Try sessionStorage cache first
       try{
         var cached=sessionStorage.getItem(ck);
         if(cached){
           hideLoad();
           var rows2=JSON.parse(cached);
-          showDataError('Using cached data (offline). Last saved: '+rows2.length+' records.');
+          showDataError('Using cached data ('+rows2.length+' records). '+(is403?'Sheet is private.':'Offline mode.'),false);
           cb(rows2);
           return;
         }
-      }catch(e){}
+      }catch(e2){}
       hideLoad();
-      showDataError('Could not load data. Check internet connection.');
+      showDataError(is403?'Sheet is private':'Could not load data',is403);
       cb([]);
     });
 }
@@ -2713,7 +2731,13 @@ window.generatePetrolReport=function(){
 
 /* ── INIT ── */
 initTheme();
-var q0=getQuote();document.getElementById('loginQuote').textContent='\u201C'+q0.q+'\u201D \u2014 '+q0.a;
+// Login quote from LOCAL_QUOTES array
+(function(){
+  var lq=document.getElementById('loginQuote');
+  if(!lq)return;
+  var pick=LOCAL_QUOTES[Math.floor(Math.random()*LOCAL_QUOTES.length)];
+  lq.innerHTML='\u201C'+esc(pick.q)+'\u201D <span style="opacity:.65">\u2014 '+esc(pick.a)+'</span>';
+})();
 document.getElementById('dfBar').style.display='none';
 
 
@@ -3531,23 +3555,37 @@ function showCalDetail(iso,evts){
 
 /* ── MOTIVATIONAL QUOTES (online + local fallback) ── */
 var LOCAL_QUOTES=[
-  'Every visit is a seed. Follow-up is the water.',
-  'The stone that builders rejected became the cornerstone.',
-  'Build relationships, not just buildings.',
-  'Premium stone, premium service, premium results.',
-  'Success is the sum of small efforts repeated every day.',
-  'A visit logged is an opportunity tracked.',
-  'The secret of getting ahead is getting started.',
-  'Quality is remembered long after the price is forgotten.',
-  'Follow up today — it could be tomorrow\'s deal.',
-  'Your consistency today builds tomorrow\'s results.',
-  'Every client you meet is a door to a new opportunity.',
-  'Stone by stone, relationship by relationship.',
-  'Don\'t count the days — make the days count.',
-  'A smile and a follow-up can close any deal.',
-  'Discipline is doing what needs to be done, even when you don\'t feel like it.',
+  {q:'Every visit is a seed. Follow-up is the water.',a:'AMROCK Wisdom'},
+  {q:'The stone that builders rejected became the cornerstone.',a:'Proverbs 118:22'},
+  {q:'Follow up today \u2014 it could be tomorrow\'s deal.',a:'AMROCK Wisdom'},
+  {q:'Build relationships, not just buildings.',a:'AMROCK Wisdom'},
+  {q:'Quality is remembered long after the price is forgotten.',a:'Gucci Family Motto'},
+  {q:'Success is the sum of small efforts repeated every day.',a:'Robert Collier'},
+  {q:'A visit logged is an opportunity tracked.',a:'AMROCK Wisdom'},
+  {q:'The secret of getting ahead is getting started.',a:'Mark Twain'},
+  {q:'Premium stone, premium service, premium results.',a:'AMROCK Wisdom'},
+  {q:'Your consistency today builds tomorrow\'s results.',a:'AMROCK Wisdom'},
+  {q:'Every client you meet is a door to a new opportunity.',a:'AMROCK Wisdom'},
+  {q:'In sales, it\'s not about having the right opportunity. It\'s about handling opportunities right.',a:'Mark Hunter'},
+  {q:'People don\'t buy what you do, they buy why you do it.',a:'Simon Sinek'},
+  {q:'The difference between try and triumph is a little umph.',a:'Marvin Phillips'},
+  {q:'Stone by stone, relationship by relationship \u2014 we build legacies.',a:'AMROCK Wisdom'},
+  {q:'Don\'t count the days \u2014 make the days count.',a:'Muhammad Ali'},
+  {q:'A smile and a follow-up can close any deal.',a:'AMROCK Wisdom'},
+  {q:'The best salespeople are problem solvers first.',a:'AMROCK Wisdom'},
+  {q:'Your attitude, not your aptitude, determines your altitude.',a:'Zig Ziglar'},
+  {q:'Discipline is doing what needs to be done even when you don\'t feel like it.',a:'AMROCK Wisdom'},
+  {q:'Great stone work lasts centuries. Great relationships last longer.',a:'AMROCK Wisdom'},
+  {q:'One follow-up can change a year. One year of follow-ups can change a career.',a:'AMROCK Wisdom'},
+  {q:'Success usually comes to those who are too busy to be looking for it.',a:'Henry David Thoreau'},
+  {q:'The harder you work, the luckier you get.',a:'Gary Player'},
+  {q:'Every no gets you closer to a yes.',a:'AMROCK Wisdom'},
+  {q:'Clients don\'t care how much you know until they know how much you care.',a:'AMROCK Wisdom'},
+  {q:'A stone placed well is art. A relationship placed well is wealth.',a:'AMROCK Wisdom'},
+  {q:'The best time to follow up was yesterday. The second best time is now.',a:'AMROCK Wisdom'},
+  {q:'Your reputation is your most valuable product.',a:'AMROCK Wisdom'},
+  {q:'Sales is not about selling anymore, but about building trust.',a:'Siva Devaki'}
 ];
-var _lastQuoteIdx=-1;
 
 function fetchMotivation(){
   var banner=document.getElementById('calMotiveText');
@@ -3557,7 +3595,8 @@ function fetchMotivation(){
   var timer=setTimeout(function(){if(!done){done=true;showLocalQuote();}},4000);
   function success(text){
     if(done)return;done=true;clearTimeout(timer);
-    banner.textContent=text;banner.style.opacity='1';
+    // text is already formatted '\u201Cquote\u201D \u2014 Author'
+    banner.innerHTML='<em>'+text+'</em>';banner.style.opacity='1';
   }
   fetch('https://zenquotes.io/api/random')
     .then(function(r){return r.json();})
@@ -3578,9 +3617,13 @@ function fetchMotivation(){
 
 function showLocalQuote(){
   var banner=document.getElementById('calMotiveText');if(!banner)return;
-  var idx;do{idx=Math.floor(Math.random()*LOCAL_QUOTES.length);}while(idx===_lastQuoteIdx&&LOCAL_QUOTES.length>1);
-  _lastQuoteIdx=idx;
-  banner.textContent='\u201C'+LOCAL_QUOTES[idx]+'\u201D';
+  // Cycle through all quotes before repeating
+  if(_qUsed.length>=LOCAL_QUOTES.length)_qUsed=[];
+  var available=LOCAL_QUOTES.map(function(_,i){return i;}).filter(function(i){return _qUsed.indexOf(i)<0;});
+  var idx=available[Math.floor(Math.random()*available.length)];
+  _qUsed.push(idx);
+  var q=LOCAL_QUOTES[idx];
+  banner.innerHTML='<em>\u201C'+esc(q.q)+'\u201D</em>'+(q.a?' <span style="opacity:.65;font-style:normal">\u2014 '+esc(q.a)+'</span>':'');
   banner.style.opacity='1';
 }
 
