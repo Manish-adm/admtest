@@ -65,7 +65,7 @@ html[data-theme="light"] .lf input{background:rgba(255,255,255,0.5)}
 /* DASHBOARD */
 #dashPage{display:none;min-height:100vh;position:relative;z-index:1}
 /* NAVBAR */
-.navbar{height:var(--nav-h);background:var(--glass);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:200;display:flex;align-items:center;padding:0 18px;gap:10px}
+.navbar{height:var(--nav-h);background:var(--glass);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:200;display:flex;align-items:center;padding:0 18px;gap:10px;flex-wrap:wrap}
 .nb-logo{display:flex;align-items:center;gap:8px;flex-shrink:0}
 .nb-logo img{height:23px}
 .nb-brand{font-size:11px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.8px}
@@ -78,7 +78,7 @@ html[data-theme="light"] .lf input{background:rgba(255,255,255,0.5)}
 html[data-theme="light"] .nb-tab.active{color:#4c1d95}
 .nb-badge{background:var(--red);color:#fff;font-size:9px;padding:1px 5px;border-radius:999px;font-weight:700;min-width:16px;text-align:center;animation:pulseBdg 2s ease-in-out infinite}
 @keyframes pulseBdg{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0)}50%{box-shadow:0 0 0 4px rgba(239,68,68,.2)}}
-.nb-right{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.nb-right{display:flex;align-items:center;gap:7px;flex-shrink:0;flex-wrap:wrap}
 .nb-clock{font-size:11px;font-weight:600;color:var(--txt2);background:rgba(255,255,255,0.05);padding:4px 9px;border-radius:999px;border:1px solid var(--border2);white-space:nowrap}
 .nb-user{display:flex;align-items:center;gap:6px;padding:4px 10px;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.22);border-radius:999px}
 .nb-av{width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -397,12 +397,18 @@ body.density-spacious th{padding:11px 14px!important}
 @media(max-width:768px){
   .mob-btabs{display:block}
   .page,.mob-nav+.page{padding-bottom:72px!important}
-  .mob-menu-btn{display:none!important}
-  .mob-nav{display:none!important}
-  .nb-srch-w{display:none}
+  .mob-menu-btn{display:block!important}
+  .nb-srch-w{display:flex!important;flex-basis:100%;order:-1;margin:8px 0;width:100%;padding:0}
+  .nb-srch{width:100%!important;flex:1}
+  .nb-divider{display:none}
   .density-btn{display:none}
   .nb-clock{display:none}
-  .nb-divider{display:none}
+  .navbar{padding:8px 12px!important;min-height:auto;height:auto}
+  .nb-logo{flex:0 1 auto;order:0}
+  .nb-tabs{display:none}
+  .nb-right{order:1;width:auto;gap:4px}
+  .nb-user{display:none}
+  .logout-btn{margin-left:auto}
 }
 
 
