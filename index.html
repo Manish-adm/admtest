@@ -737,17 +737,22 @@ html[data-theme="light"] .mob-sb-item.active{color:#4c1d95}
 .mob-sb-theme-btn{background:rgba(255,255,255,.07);color:var(--txt);border:1px solid rgba(255,255,255,.1) !important}
 .mob-sb-logout-btn{background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.25) !important}
 
-/* Override: hide bottom tab bar, show sidebar toggle */
+/* Mobile layout */
 @media(max-width:768px){
   .mob-btabs{display:none !important}
   .mob-more-menu{display:none !important}
   .mob-nav{display:none !important}
   .mob-menu-btn{display:block !important}
-  .nb-srch-w{display:none}
-  .page{padding-bottom:16px !important}
-  .density-btn{display:none}
-  .nb-clock{display:none}
-  .nb-divider{display:none}
+  .nb-srch-w{display:none !important}
+  .page{padding-bottom:80px !important}
+  .density-btn{display:none !important}
+  .nb-clock{display:none !important}
+  .nb-divider{display:none !important}
+  .nb-user{display:none !important}
+  .logout-btn{display:none !important}
+  .theme-btn{display:none !important}
+  .nb-tabs{display:none !important}
+  .navbar{padding:0 12px !important;height:52px !important}
 }
 
 
@@ -1277,6 +1282,193 @@ body:hover .cursor-glow{opacity:1}
 
 html[data-theme="light"] #dataErrBanner{background:rgba(220,38,38,.08);color:#991b1b;border-color:rgba(220,38,38,.25)}
 html[data-theme="light"] #dataErrBanner button{background:rgba(220,38,38,.1)!important;border-color:rgba(220,38,38,.3)!important;color:#991b1b!important}
+
+/* ════════════════════════════════════
+   MOBILE APP REDESIGN
+════════════════════════════════════ */
+
+/* BOTTOM NAVIGATION BAR */
+.mob-app-bar{
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;
+  height:68px;z-index:400;
+  background:rgba(255,255,255,.96);
+  backdrop-filter:blur(20px) saturate(180%);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  border-top:1px solid rgba(99,102,241,.15);
+  box-shadow:0 -4px 20px rgba(0,0,0,.08);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+html[data-theme="dark"] .mob-app-bar{
+  background:rgba(10,14,40,.96);
+  border-top-color:rgba(255,255,255,.1);
+  box-shadow:0 -4px 20px rgba(0,0,0,.3);
+}
+.mob-app-bar-inner{display:flex;height:100%;padding:0 4px}
+.mob-app-tab{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;background:transparent;border:none;cursor:pointer;
+  font-family:'Sora',sans-serif;color:#9ca3af;
+  transition:color .2s ease;-webkit-tap-highlight-color:transparent;
+  position:relative;padding:8px 2px 6px;
+}
+.mob-app-tab.active{color:#7c3aed}
+html[data-theme="light"] .mob-app-tab.active{color:#6d28d9}
+.mob-app-tab.active::before{
+  content:'';position:absolute;top:0;left:20%;right:20%;height:2.5px;
+  background:linear-gradient(90deg,#7c3aed,#6366f1);
+  border-radius:0 0 4px 4px;
+}
+.mob-app-ic{font-size:22px;line-height:1;transition:transform .2s cubic-bezier(.34,1.56,.64,1)}
+.mob-app-tab.active .mob-app-ic{transform:scale(1.15)}
+.mob-app-lbl{font-size:9px;font-weight:600;letter-spacing:.2px;line-height:1}
+.mob-app-badge{
+  position:absolute;top:6px;right:calc(50% - 18px);
+  background:#ef4444;color:#fff;font-size:9px;
+  padding:1px 5px;border-radius:999px;font-weight:700;
+  min-width:16px;text-align:center;
+  animation:badgePop 2s ease-in-out infinite;
+}
+
+/* TOP MOBILE HEADER */
+.mob-top-bar{
+  display:none;
+  position:sticky;top:0;z-index:300;
+  background:rgba(255,255,255,.96);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(99,102,241,.12);
+  padding:10px 14px;
+  align-items:center;gap:10px;
+  box-shadow:0 1px 8px rgba(0,0,0,.06);
+}
+html[data-theme="dark"] .mob-top-bar{
+  background:rgba(8,12,40,.96);
+  border-bottom-color:rgba(255,255,255,.1);
+}
+.mob-top-logo{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.mob-top-logo span{font-size:11px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.6px}
+.mob-top-right{display:flex;align-items:center;gap:8px;margin-left:auto}
+.mob-top-clock{font-size:11px;font-weight:600;color:var(--txt2);background:rgba(99,102,241,.08);padding:4px 8px;border-radius:999px;white-space:nowrap}
+html[data-theme="light"] .mob-top-clock{color:#374151}
+.mob-top-user{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#7c3aed,#6366f1);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.mob-menu-fab{width:34px;height:34px;border-radius:10px;background:var(--glass);border:1px solid var(--border);color:var(--txt2);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:.15s;-webkit-tap-highlight-color:transparent}
+.mob-menu-fab:active{background:rgba(124,58,237,.15)}
+.mob-top-search{flex:1;position:relative}
+.mob-top-search-ic{position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--txt3);pointer-events:none}
+.mob-top-search-inp{width:100%;padding:7px 10px 7px 28px;border:1px solid var(--border);border-radius:999px;background:rgba(99,102,241,.06);color:var(--txt);font-size:12px;outline:none;font-family:'Sora',sans-serif}
+html[data-theme="light"] .mob-top-search-inp{background:rgba(99,102,241,.05);color:#1e1b4b}
+.mob-top-search-inp::placeholder{color:var(--txt3)}
+.mob-top-search-inp:focus{border-color:rgba(124,58,237,.4);background:rgba(124,58,237,.06)}
+
+/* MOBILE KPI CARDS — 2-column horizontal scroll */
+.kpi-scroll{overflow-x:auto;display:none;padding:0 14px 4px;gap:10px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.kpi-scroll::-webkit-scrollbar{display:none}
+.kpi-scroll-item{flex-shrink:0;width:140px;background:var(--glass);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border:1px solid var(--border);border-radius:16px;padding:14px 14px 12px;position:relative;overflow:hidden}
+html[data-theme="light"] .kpi-scroll-item{background:rgba(255,255,255,.92);border-color:rgba(99,102,241,.18)}
+.kpi-scroll-lbl{font-size:10px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.kpi-scroll-val{font-size:26px;font-weight:800;color:var(--txt);line-height:1}
+.kpi-scroll-sub{font-size:10px;color:var(--txt3);margin-top:3px}
+.kpi-scroll-ic{position:absolute;right:10px;top:10px;font-size:20px;opacity:.6}
+
+/* MOBILE VISIT CARDS — redesigned */
+.mob-card-v2{
+  background:var(--glass);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+  border:1px solid var(--border);border-radius:18px;
+  padding:0;margin-bottom:10px;overflow:hidden;
+  box-shadow:0 2px 12px rgba(0,0,0,.06);
+  animation:cardSwipeIn .25s ease both;
+}
+html[data-theme="light"] .mob-card-v2{background:rgba(255,255,255,.92);border-color:rgba(99,102,241,.15)}
+.mob-card-v2-top{padding:14px 16px 10px;display:flex;align-items:flex-start;gap:11px}
+.mob-card-v2-avatar{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,rgba(124,58,237,.3),rgba(99,102,241,.3));color:#c4b5fd;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;letter-spacing:.5px}
+html[data-theme="light"] .mob-card-v2-avatar{background:linear-gradient(135deg,rgba(109,40,217,.15),rgba(91,33,182,.15));color:#6d28d9}
+.mob-card-v2-body{flex:1;min-width:0}
+.mob-card-v2-client{font-size:15px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2}
+html[data-theme="light"] .mob-card-v2-client{color:#1e1b4b}
+.mob-card-v2-site{font-size:12px;color:var(--txt2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html[data-theme="light"] .mob-card-v2-site{color:#6b7280}
+.mob-card-v2-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}
+.mob-card-v2-km{font-size:18px;font-weight:800;color:#8b5cf6;line-height:1}
+.mob-card-v2-km-lbl{font-size:9px;color:var(--txt3);text-align:right}
+.mob-card-v2-chips{display:flex;gap:5px;padding:0 16px 10px;flex-wrap:wrap}
+.mob-card-v2-chip{font-size:10px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(124,58,237,.1);color:#a78bfa;border:1px solid rgba(124,58,237,.2)}
+html[data-theme="light"] .mob-card-v2-chip{background:rgba(109,40,217,.08);color:#6d28d9;border-color:rgba(109,40,217,.2)}
+.mob-card-v2-remark{font-size:12px;color:var(--txt2);padding:0 16px 8px;line-height:1.5}
+html[data-theme="light"] .mob-card-v2-remark{color:#6b7280}
+.mob-card-v2-footer{display:flex;gap:0;border-top:1px solid var(--border2)}
+html[data-theme="light"] .mob-card-v2-footer{border-top-color:rgba(99,102,241,.1)}
+.mob-card-v2-action{flex:1;padding:11px 8px;text-align:center;font-size:12px;font-weight:600;color:var(--txt2);text-decoration:none;cursor:pointer;transition:.15s;-webkit-tap-highlight-color:transparent}
+.mob-card-v2-action:active{background:rgba(124,58,237,.08)}
+.mob-card-v2-action.primary{color:#7c3aed;font-weight:700}
+html[data-theme="light"] .mob-card-v2-action.primary{color:#6d28d9}
+.mob-card-v2-action+.mob-card-v2-action{border-left:1px solid var(--border2)}
+html[data-theme="light"] .mob-card-v2-action+.mob-card-v2-action{border-left-color:rgba(99,102,241,.1)}
+
+/* SECTION HEADER MOBILE */
+.mob-sec-hdr{padding:16px 14px 8px;display:flex;align-items:center;justify-content:space-between}
+.mob-sec-title{font-size:18px;font-weight:800;color:var(--txt)}
+html[data-theme="light"] .mob-sec-title{color:#1e1b4b}
+.mob-sec-badge{font-size:11px;font-weight:600;background:rgba(124,58,237,.12);color:#a78bfa;padding:4px 10px;border-radius:999px;border:1px solid rgba(124,58,237,.2)}
+html[data-theme="light"] .mob-sec-badge{background:rgba(109,40,217,.08);color:#6d28d9;border-color:rgba(109,40,217,.2)}
+
+/* ALERT BANNER MOBILE */
+.alert-top{border-radius:14px;margin:8px 14px 4px;padding:10px 14px}
+
+/* PAGE MOBILE PADDING */
+@media(max-width:768px){
+  .mob-app-bar{display:block}
+  .mob-top-bar{display:flex}
+  .navbar{display:none !important}
+  .mob-sidebar{top:0}
+  .page{padding:0 0 80px !important;background:transparent}
+  .kpi-grid{display:none !important}
+  .kpi-scroll{display:flex !important}
+  #alertBanner{margin:8px 14px 4px}
+  .sh{padding:8px 14px 6px;margin-bottom:4px}
+  .tcard{border-radius:16px;margin:0 14px 10px}
+  .fbar{border-radius:14px;margin:0 14px 8px;flex-wrap:wrap;gap:6px}
+  .mob-card{display:none !important}
+  #mobCards{padding:0 14px}
+  .fab{bottom:80px;right:16px;width:54px;height:54px;font-size:24px}
+  .greeting{padding:12px 14px 0;margin-bottom:0}
+  .greeting h2{font-size:20px}
+  .df-bar{margin:4px 14px 8px;border-radius:14px;padding:8px 12px}
+  .mom{margin:0 14px 8px;border-radius:14px}
+  .emp-day{margin:8px 14px;border-radius:16px}
+  .detail-panel{width:100vw;border-radius:0}
+  .login-card{margin:16px;border-radius:20px}
+  .sc-grid{padding:0 14px}
+  .ch-r2,.ch-r3,.analytics-grid{padding:0 14px}
+  .ch-card{border-radius:16px}
+  .report-card{margin:0 14px 10px;border-radius:16px}
+  .cal-grid-wrap{margin:0 14px;border-radius:16px}
+  .cal-motive-banner{margin:8px 14px 4px;border-radius:14px}
+  .cal-hdr-row{padding:8px 14px}
+  .cal-legend-row{margin:4px 14px 8px;border-radius:12px}
+  .cal-detail-card{margin:0 14px 10px;border-radius:16px}
+  .pag-bar{margin:8px 14px}
+  .dead-list{margin:0 14px 10px;border-radius:16px}
+  .si-card{margin:0 14px 8px;border-radius:16px}
+  .sc-grid>.sc-card{margin:0 14px 10px}
+}
+
+@media(max-width:400px){
+  .mob-app-lbl{display:none}
+  .mob-app-tab{gap:0}
+  .mob-app-ic{font-size:24px}
+  .mob-app-bar{height:58px}
+  .page{padding-bottom:60px !important}
+}
+
+
+/* ANNOUNCEMENTS */
+.ann-banner{display:none;margin:8px 0 4px;display:flex;flex-direction:column;gap:6px}
+.ann-item{background:var(--glass);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border:1px solid var(--border);border-radius:var(--r12);padding:10px 13px}
+html[data-theme="light"] .ann-item{background:rgba(255,255,255,.88);border-color:rgba(99,102,241,.15)}
+.ann-btn{font-size:11px;padding:5px 11px;border-radius:var(--r8);background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(99,102,241,.15));border:1px solid rgba(124,58,237,.3);color:#c4b5fd;cursor:pointer;font-family:'Sora',sans-serif;font-weight:600;transition:.15s;white-space:nowrap}
+.ann-btn:hover{background:rgba(124,58,237,.3)}
+html[data-theme="light"] .ann-btn{color:#6d28d9;background:rgba(109,40,217,.08);border-color:rgba(109,40,217,.25)}
+
 </style>
 </head>
 <body>
@@ -1311,6 +1503,49 @@ html[data-theme="light"] #dataErrBanner button{background:rgba(220,38,38,.1)!imp
 </div>
 
 <div id="dashPage">
+  <!-- MOBILE TOP BAR -->
+  <div class="mob-top-bar" id="mobTopBar">
+    <div class="mob-top-logo">
+      <img src="https://www.amrockstone.com/assets/img/alogo.svg" height="20" alt="AMROCK" onerror="this.style.display='none'"/>
+      <span>CRM</span>
+    </div>
+    <div class="mob-top-search">
+      <span class="mob-top-search-ic">&#128269;</span>
+      <input class="mob-top-search-inp" id="clF_mob2" type="search" placeholder="Search..." oninput="syncMobSearch(this.value)" autocomplete="off"/>
+    </div>
+    <div class="mob-top-right">
+      <div class="mob-top-clock" id="mobClock2">--:--</div>
+      <div class="mob-top-user" id="mobTopAv" onclick="openMobSidebar()">MA</div>
+    </div>
+  </div>
+
+  <!-- MOBILE BOTTOM APP BAR -->
+  <div class="mob-app-bar" id="mobAppBar">
+    <div class="mob-app-bar-inner">
+      <button class="mob-app-tab active" id="abtDash" onclick="showSec('dash')">
+        <span class="mob-app-ic">&#128202;</span>
+        <span class="mob-app-lbl">Home</span>
+      </button>
+      <button class="mob-app-tab" id="abtVisits" onclick="showSec('all')">
+        <span class="mob-app-ic">&#128203;</span>
+        <span class="mob-app-lbl">Visits</span>
+      </button>
+      <button class="mob-app-tab" id="abtToday" onclick="showSec('today')">
+        <span class="mob-app-ic">&#9989;</span>
+        <span class="mob-app-lbl">Today</span>
+        <span class="mob-app-badge" id="abtOvBdg" style="display:none">0</span>
+      </button>
+      <button class="mob-app-tab" id="abtCal" onclick="showSec('cal')">
+        <span class="mob-app-ic">&#128197;</span>
+        <span class="mob-app-lbl">Calendar</span>
+      </button>
+      <button class="mob-app-tab" id="abtMore" onclick="openMobSidebar()">
+        <span class="mob-app-ic">&#9776;</span>
+        <span class="mob-app-lbl">Menu</span>
+      </button>
+    </div>
+  </div>
+
   <!-- MOBILE LEFT SIDEBAR -->
   <div class="mob-sidebar-overlay" id="mobSbOverlay" onclick="closeMobSidebar()"></div>
   <div class="mob-sidebar" id="mobSidebar">
@@ -1416,6 +1651,7 @@ html[data-theme="light"] #dataErrBanner button{background:rgba(220,38,38,.1)!imp
       <button class="nb-tab" id="navDupes" onclick="showSec('dupes')" style="display:none">&#128269; Duplicates</button>
     </div>
     <div class="nb-right">
+      <button id="announceBtn" onclick="openAnnouncementModal()" class="ann-btn" style="display:none" title="Post announcement to team">&#128226; Announce</button>
       <div class="nb-srch-w">
         <span class="nb-srch-ic">&#128269;</span>
         <input class="nb-srch" id="clF" type="search" placeholder="Search clients, sites..."/>
@@ -1443,6 +1679,42 @@ html[data-theme="light"] #dataErrBanner button{background:rgba(220,38,38,.1)!imp
   </div>
 
   <div class="page">
+
+    <!-- ANNOUNCEMENT BANNER -->
+    <div id="announcementBanner" style="display:none;margin:0 0 8px;flex-direction:column;gap:6px" class="ann-banner"></div>
+
+    <!-- ANNOUNCEMENT MODAL -->
+    <div class="modal-ov" id="annModal">
+      <div class="modal-box" style="max-width:480px">
+        <div class="modal-hdr">
+          <div class="modal-ttl">&#128226; Post Announcement</div>
+          <button class="modal-close" onclick="closeAnnouncementModal()">&#10005;</button>
+        </div>
+        <div style="padding:16px;display:flex;flex-direction:column;gap:10px">
+          <div>
+            <label style="font-size:10px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:5px">Title</label>
+            <input id="annTitle" type="text" placeholder="e.g. Team meeting at 3pm today" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--r8);background:rgba(255,255,255,.07);color:var(--txt);font-size:13px;outline:none;font-family:'Sora',sans-serif"/>
+          </div>
+          <div>
+            <label style="font-size:10px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:5px">Message</label>
+            <textarea id="annMsg" rows="3" placeholder="Full message for your team..." style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--r8);background:rgba(255,255,255,.07);color:var(--txt);font-size:12px;outline:none;font-family:'Sora',sans-serif;resize:vertical;line-height:1.5"></textarea>
+          </div>
+          <div>
+            <label style="font-size:10px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:5px">Priority</label>
+            <select id="annPriority" style="padding:8px 12px;border:1px solid var(--border);border-radius:var(--r8);background:rgba(255,255,255,.07);color:var(--txt);font-size:12px;outline:none;font-family:'Sora',sans-serif;width:100%">
+              <option value="normal">&#128994; Normal</option>
+              <option value="urgent">&#128308; Urgent</option>
+              <option value="info">&#128309; Info</option>
+            </select>
+          </div>
+        </div>
+        <div style="padding:11px 16px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end">
+          <button class="sel-btn cancel" onclick="closeAnnouncementModal()">Cancel</button>
+          <button class="sel-btn confirm" onclick="postAnnouncement()">&#128226; Post to All</button>
+        </div>
+      </div>
+    </div>
+
     <div id="dataErrBanner" style="display:none;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);border-radius:var(--r12);margin-bottom:10px;font-size:12px;color:#fca5a5;flex-wrap:wrap;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)"></div>
     <div id="alertBanner" style="display:none"></div>
 
@@ -1493,6 +1765,34 @@ html[data-theme="light"] #dataErrBanner button{background:rgba(220,38,38,.1)!imp
             <div id="smartInsightsCard" style="display:none">
         <div class="sh"><span class="sh-ttl">&#129504; Smart Insights</span></div>
         <div class="si-card" id="smartInsightsWrap"></div>
+      </div>
+      <!-- MOBILE KPI SCROLL -->
+      <div class="kpi-scroll" id="kpiScroll">
+        <div class="kpi-scroll-item" onclick="showSec('all')">
+          <div class="kpi-scroll-lbl">&#128203; Total Visits</div>
+          <div class="kpi-scroll-val" id="mkT">0</div>
+          <div class="kpi-scroll-sub" id="mkTsub">All time</div>
+        </div>
+        <div class="kpi-scroll-item" onclick="showSec('today')">
+          <div class="kpi-scroll-lbl">&#9989; Today</div>
+          <div class="kpi-scroll-val" id="mkV" style="color:#10b981">0</div>
+          <div class="kpi-scroll-sub">Logged today</div>
+        </div>
+        <div class="kpi-scroll-item" onclick="showSec('all')">
+          <div class="kpi-scroll-lbl">&#128276; Due Today</div>
+          <div class="kpi-scroll-val" id="mkD" style="color:#f59e0b">0</div>
+          <div class="kpi-scroll-sub">Follow-ups</div>
+        </div>
+        <div class="kpi-scroll-item" onclick="showSec('overdue')">
+          <div class="kpi-scroll-lbl">&#9888; Overdue</div>
+          <div class="kpi-scroll-val" id="mkO" style="color:#ef4444">0</div>
+          <div class="kpi-scroll-sub">Need action</div>
+        </div>
+        <div class="kpi-scroll-item">
+          <div class="kpi-scroll-lbl">&#128663; KM</div>
+          <div class="kpi-scroll-val" id="mkKM" style="color:#8b5cf6">0</div>
+          <div class="kpi-scroll-sub">Period total</div>
+        </div>
       </div>
 <div id="scorecardSection"><div class="sh"><span class="sh-ttl">Employee Performance</span><span class="sh-badge" id="scNote">Period</span></div><div class="sc-grid" id="scorecardGrid"></div></div>
       <div id="chartSection">
@@ -1756,6 +2056,7 @@ html[data-theme="light"] #dataErrBanner button{background:rgba(220,38,38,.1)!imp
       </div>
       <div style="padding:16px">
         <div class="notes-existing" id="notesExisting" style="display:none"></div>
+        <div style="font-size:11px;color:#d97706;background:rgba(245,158,11,.08);border-radius:8px;padding:7px 10px;margin-bottom:9px;line-height:1.5;border:1px solid rgba(245,158,11,.2)">&#8505; Notes are saved on <strong>this device only</strong> and not visible to others. To share info, use the &#9999; Update button to update the visit remark.</div>
         <div class="notes-lbl">Add / update note (saved permanently on this device)</div>
         <textarea class="wa-edit" id="notesText" placeholder="Add a note about this visit..." rows="5" style="min-height:100px"></textarea>
       </div>
@@ -2110,7 +2411,32 @@ function fetchData(cb){
 
 /* ── AUTO REFRESH ── */
 function startAR(){if(rfInt)clearInterval(rfInt);rfCd=120;rfInt=setInterval(function(){rfCd--;if(rfCd<=20)document.getElementById('nbClock').style.color='#f59e0b';else document.getElementById('nbClock').style.color='';if(rfCd<=0){rfCd=120;silentRefresh();}},1000);}
-function silentRefresh(){fetchData(function(rows){if(!rows||!rows.length)return;ALL_ROWS=rows;myRows=isMgmt?ALL_ROWS:ALL_ROWS.filter(function(r){return r.employee.toLowerCase().indexOf(currentUser.employeeName.toLowerCase())>=0;});updateAll();rfCd=120;});}
+function silentRefresh(){
+  fetchData(function(rows){
+    if(!rows||!rows.length){
+      // Auto-retry in 30s if still logged in
+      if(currentUser)setTimeout(silentRefresh,30000);
+      return;
+    }
+    ALL_ROWS=rows;
+    myRows=isMgmt?ALL_ROWS:ALL_ROWS.filter(function(r){
+      return r.employee.toLowerCase().indexOf(currentUser.employeeName.toLowerCase())>=0;
+    });
+    updateAll();rfCd=120;
+    // Hide error banner on success
+    var errDiv=document.getElementById('dataErrBanner');if(errDiv)errDiv.style.display='none';
+  });
+}
+/* Auto-retry when user returns to tab */
+document.addEventListener('visibilitychange',function(){
+  if(!document.hidden&&currentUser&&(!ALL_ROWS||ALL_ROWS.length===0)){
+    silentRefresh();
+  }
+});
+/* Auto-retry on network reconnect */
+window.addEventListener('online',function(){
+  if(currentUser&&(!ALL_ROWS||ALL_ROWS.length===0))silentRefresh();
+});
 
 /* ── SECTION NAV ── */
 function showSec(sec){
@@ -2651,6 +2977,7 @@ function doLogin(){
       var seen={};ALL_ROWS.forEach(function(r){if(r.employee&&!seen[r.employee]){seen[r.employee]=true;var o=document.createElement('option');o.value=r.employee;o.textContent=r.employee;ef.appendChild(o);}});
       document.getElementById('scorecardSection').style.display='block';document.getElementById('chartSection').style.display='block';
       document.getElementById('smartInsightsCard').style.display='block';
+      var ab=document.getElementById('announceBtn');if(ab)ab.style.display='';
       document.getElementById('navDead').style.display='';document.getElementById('navDupes').style.display='';document.getElementById('mnavDead').style.display='';document.getElementById('mmDead').style.display='';
       document.getElementById('navPetrol').style.display='';document.getElementById('mnavPetrol').style.display='';document.getElementById('mmPetrol').style.display='';
     }else{
@@ -3799,6 +4126,446 @@ document.addEventListener('DOMContentLoaded',function(){
     }
   });
 })();
+
+
+/* MOBILE APP: rebuild cards with new design */
+var _origBuildMobCards2=buildMobCards;
+buildMobCards=function(rows){
+  var sorted=sortRows(rows);window.mobRows=sorted;
+  var html='';
+  var TYPE_COL={ov:'#ef4444',due:'#f59e0b',up:'#8b5cf6',done:'#10b981',nf:'#94a3b8'};
+  for(var j=0;j<sorted.length;j++){
+    var r=sorted[j];
+    var s=getSt(r);
+    var type=s==='Overdue'?'ov':s==='Due today'?'due':s==='Done'?'done':s==='Upcoming'?'up':'nf';
+    var dl=s==='Overdue'?daysDiff(r.followupDate):0;
+    var statusText=s+(dl>0?' ('+dl+'d)':'');
+    var empInit=getIn(r.employee||r.client||'?');
+    var col=TYPE_COL[type]||'#8b5cf6';
+    html+='<div class="mob-card-v2" onclick="openPanel(mobRows['+j+'])" style="border-left:4px solid '+col+'">';
+    html+='<div class="mob-card-v2-top">';
+    html+='<div class="mob-card-v2-avatar">'+empInit+'</div>';
+    html+='<div class="mob-card-v2-body">';
+    html+='<div class="mob-card-v2-client">'+esc(r.client||'Unknown')+'</div>';
+    html+='<div class="mob-card-v2-site">'+esc(r.site||r.siteAddress||'-')+(r.employee&&isMgmt?' &middot; '+esc(r.employee):'')+'</div>';
+    html+='</div>';
+    html+='<div class="mob-card-v2-right">';
+    html+='<div class="mob-card-v2-km">'+parseKm(r.kilometers).toFixed(0)+'</div>';
+    html+='<div class="mob-card-v2-km-lbl">KM</div>';
+    html+='</div></div>';
+    // Chips row
+    html+='<div class="mob-card-v2-chips">';
+    html+='<span class="mob-card-v2-chip" style="background:'+col+'18;color:'+col+';border-color:'+col+'33">'+statusText+'</span>';
+    if(r.visitDate)html+='<span class="mob-card-v2-chip">'+esc(r.visitDate)+'</span>';
+    if(r.product)html+='<span class="mob-card-v2-chip">'+esc(r.product)+'</span>';
+    if(r.entryType)html+='<span class="mob-card-v2-chip" style="background:rgba(124,58,237,.08);color:#8b5cf6">'+esc(r.entryType)+'</span>';
+    if(r.followupDate)html+='<span class="mob-card-v2-chip" style="background:rgba(99,102,241,.08);color:#6366f1">&#128197; '+esc(r.followupDate)+'</span>';
+    html+='</div>';
+    // Remark
+    if(r.remark)html+='<div class="mob-card-v2-remark">'+esc(r.remark.substring(0,100))+(r.remark.length>100?'\u2026':'')+'</div>';
+    // Footer actions
+    html+='<div class="mob-card-v2-footer">';
+    html+='<a class="mob-card-v2-action primary" onclick="event.stopPropagation();openPanel(mobRows['+j+'])">&#128065; Details</a>';
+    if(r.mobile)html+='<a class="mob-card-v2-action" onclick="event.stopPropagation();openWAModal(mobRows['+j+'])">&#128172; WhatsApp</a>';
+    if(r.editUrl)html+='<a class="mob-card-v2-action" href="'+esc(r.editUrl)+'" target="_blank" onclick="event.stopPropagation()">&#9999; Update</a>';
+    html+='</div></div>';
+  }
+  document.getElementById('mobCards').innerHTML=html||'<p style="text-align:center;padding:32px;color:var(--txt2)">No visits match current filters.</p>';
+};
+
+
+/* UPDATE MOBILE UI */
+var _mobClockInt=null;
+function startMobClock(){
+  function tickMob(){
+    var t=new Intl.DateTimeFormat('en-IN',{timeZone:'Asia/Kolkata',hour:'2-digit',minute:'2-digit',hour12:true}).format(new Date());
+    var el=document.getElementById('mobClock2');if(el)el.textContent=t;
+  }
+  tickMob();
+  if(!_mobClockInt)_mobClockInt=setInterval(tickMob,1000);
+}
+
+function updateMobKPIs(rows,today,overdueAll){
+  var tot=rows.length,tod=0,due=0,km=0;
+  rows.forEach(function(r){
+    if(r.visitDate===today)tod++;
+    if(getSt(r)==='Due today')due++;
+    km+=parseKm(r.kilometers);
+  });
+  var els={mkT:tot,mkV:tod,mkD:due,mkO:overdueAll.length,mkKM:Math.round(km)};
+  Object.keys(els).forEach(function(id){
+    var el=document.getElementById(id);
+    if(el)animC(el,els[id],600);
+  });
+  // Update bottom bar badge
+  var bdg=document.getElementById('abtOvBdg');
+  if(bdg){bdg.textContent=overdueAll.length;bdg.style.display=overdueAll.length>0?'flex':'none';}
+  var sbBdg=document.getElementById('mobSbOvBdg');
+  if(sbBdg){sbBdg.textContent=overdueAll.length;sbBdg.style.display=overdueAll.length>0?'inline':'none';}
+}
+
+/* Patch showSec to update bottom bar active */
+var _origShowSecMob=showSec;
+showSec=function(sec){
+  _origShowSecMob(sec);
+  var map2={dash:'abtDash',all:'abtVisits',today:'abtToday',cal:'abtCal'};
+  document.querySelectorAll('.mob-app-tab').forEach(function(t){t.classList.remove('active');});
+  var abt=document.getElementById(map2[sec])||document.getElementById('abtMore');
+  if(abt)abt.classList.add('active');
+};
+
+/* Patch updateAll to also update mobile */
+var _pMobUA=updateAll;
+updateAll=function(){
+  _pMobUA();
+  var allSrc=isMgmt?ALL_ROWS:myRows;
+  var today=fmtToday();
+  var overdueAll=allSrc.filter(function(r){return getSt(r)==='Overdue';});
+  updateMobKPIs(dfRows(allSrc),today,overdueAll);
+};
+
+/* Setup mobile top bar after login */
+var _origSetupMobSb=setupMobSidebar;
+setupMobSidebar=function(){
+  _origSetupMobSb();
+  var av=document.getElementById('mobTopAv');
+  if(av&&currentUser)av.textContent=getIn(currentUser.displayName);
+  startMobClock();
+};
+
+
+/* ════════════════════════════════════════════════════════
+   AMROCK CRM — SUPABASE BACKEND
+   Real-time notes, status, announcements
+════════════════════════════════════════════════════════ */
+var SB_URL='https://utkrogttpfocyvoxmhzm.supabase.co';
+var SB_KEY='sb_publishable_QPQyrUHs9aYLI30m-47A-Q_VGL8UpcI';
+
+/* ── SUPABASE API HELPER ── */
+function sbFetch(method, table, body, params) {
+  var url = SB_URL + '/rest/v1/' + table;
+  if (params) url += '?' + params;
+  return fetch(url, {
+    method: method,
+    headers: {
+      'apikey': SB_KEY,
+      'Authorization': 'Bearer ' + SB_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': method === 'POST' ? 'return=representation,resolution=merge-duplicates' : 'return=representation'
+    },
+    body: body ? JSON.stringify(body) : undefined
+  }).then(function(r) {
+    if (!r.ok) return r.text().then(function(t) { throw new Error(t); });
+    return r.json().catch(function() { return []; });
+  });
+}
+
+/* ── VISIT NOTES ── */
+function sbGetNote(visitKey) {
+  return sbFetch('GET', 'visit_notes', null, 'visit_key=eq.' + encodeURIComponent(visitKey) + '&limit=1')
+    .then(function(rows) { return rows && rows[0] ? rows[0].note : ''; })
+    .catch(function() { return ''; });
+}
+
+function sbSaveNote(visitKey, visitDate, clientName, mobile, employee, note, author) {
+  var payload = {
+    visit_key: visitKey,
+    visit_date: visitDate || '',
+    client_name: clientName || '',
+    mobile: mobile || '',
+    employee: employee || '',
+    note: note,
+    author: author,
+    updated_at: new Date().toISOString()
+  };
+  return sbFetch('POST', 'visit_notes', payload,
+    'on_conflict=visit_key')
+    .catch(function(e) {
+      // Try PATCH if POST fails
+      return sbFetch('PATCH', 'visit_notes', payload,
+        'visit_key=eq.' + encodeURIComponent(visitKey));
+    });
+}
+
+function sbDeleteNote(visitKey) {
+  return sbFetch('DELETE', 'visit_notes', null,
+    'visit_key=eq.' + encodeURIComponent(visitKey));
+}
+
+/* ── VISIT STATUS OVERRIDES ── */
+function sbSetStatus(visitKey, visitDate, clientName, mobile, employee, status, snoozeUntil, updatedBy) {
+  var payload = {
+    visit_key: visitKey,
+    visit_date: visitDate || '',
+    client_name: clientName || '',
+    mobile: mobile || '',
+    employee: employee || '',
+    status: status,
+    snooze_until: snoozeUntil || null,
+    updated_by: updatedBy,
+    updated_at: new Date().toISOString()
+  };
+  return sbFetch('POST', 'visit_status', payload, 'on_conflict=visit_key')
+    .catch(function() {
+      return sbFetch('PATCH', 'visit_status', payload,
+        'visit_key=eq.' + encodeURIComponent(visitKey));
+    });
+}
+
+function sbGetStatuses() {
+  return sbFetch('GET', 'visit_status', null, 'select=visit_key,status,snooze_until,updated_by,updated_at')
+    .catch(function() { return []; });
+}
+
+/* ── ANNOUNCEMENTS ── */
+function sbGetAnnouncements() {
+  var now = new Date().toISOString();
+  return sbFetch('GET', 'announcements', null,
+    'is_active=eq.true&order=created_at.desc&limit=10')
+    .catch(function() { return []; });
+}
+
+function sbPostAnnouncement(title, message, priority, author, expiresHours) {
+  var expires = expiresHours ?
+    new Date(Date.now() + expiresHours * 3600000).toISOString() : null;
+  return sbFetch('POST', 'announcements', {
+    title: title, message: message, priority: priority || 'normal',
+    author: author, expires_at: expires, is_active: true
+  }, '');
+}
+
+function sbMarkRead(announcementId, username) {
+  return sbFetch('POST', 'announcement_reads',
+    { announcement_id: announcementId, username: username }, '')
+    .catch(function() {});
+}
+
+function sbDeleteAnnouncement(id) {
+  return sbFetch('PATCH', 'announcements', { is_active: false },
+    'id=eq.' + id);
+}
+
+/* ── USER ACTIVITY ── */
+function sbUpdateActivity(sec) {
+  if (!currentUser) return;
+  sbFetch('POST', 'user_activity', {
+    username: Object.keys(USERS).find(function(k) { return USERS[k] === currentUser; }) || currentUser.displayName,
+    display_name: currentUser.displayName,
+    role: currentUser.role,
+    last_seen: new Date().toISOString(),
+    current_sec: sec || curSec
+  }, 'on_conflict=username').catch(function() {});
+}
+
+/* ── REALTIME SUBSCRIPTIONS ── */
+var sbWS = null;
+var sbRealtimeActive = false;
+
+function sbStartRealtime() {
+  if (sbRealtimeActive) return;
+  try {
+    var wsUrl = SB_URL.replace('https://', 'wss://') + '/realtime/v1/websocket?apikey=' + SB_KEY + '&vsn=1.0.0';
+    sbWS = new WebSocket(wsUrl);
+    sbWS.onopen = function() {
+      sbRealtimeActive = true;
+      // Subscribe to announcements
+      sbWS.send(JSON.stringify({
+        topic: 'realtime:public:announcements', event: 'phx_join',
+        payload: {}, ref: '1'
+      }));
+      // Subscribe to visit_notes
+      sbWS.send(JSON.stringify({
+        topic: 'realtime:public:visit_notes', event: 'phx_join',
+        payload: {}, ref: '2'
+      }));
+      console.log('[AMROCK CRM] Realtime connected');
+    };
+    sbWS.onmessage = function(evt) {
+      try {
+        var msg = JSON.parse(evt.data);
+        if (msg.event === 'INSERT' || msg.event === 'UPDATE') {
+          if (msg.topic && msg.topic.indexOf('announcements') >= 0) {
+            loadAnnouncements();
+          }
+          if (msg.topic && msg.topic.indexOf('visit_notes') >= 0) {
+            showCopyToast('\uD83D\uDCDD Note updated by team member');
+          }
+        }
+      } catch(e) {}
+    };
+    sbWS.onclose = function() {
+      sbRealtimeActive = false;
+      // Reconnect after 5s
+      setTimeout(sbStartRealtime, 5000);
+    };
+    sbWS.onerror = function() { sbRealtimeActive = false; };
+  } catch(e) {
+    console.log('[AMROCK CRM] Realtime not available:', e.message);
+  }
+}
+
+/* Activity heartbeat every 60s */
+setInterval(function() { sbUpdateActivity(); }, 60000);
+
+/* ═══════════════════════════════════════════════════════════
+   PATCH: saveNote → now saves to Supabase
+═══════════════════════════════════════════════════════════ */
+function saveNote() {
+  if (!_nTarget) return;
+  var ta = document.getElementById('notesText');
+  var txt = ta ? ta.value.trim() : '';
+  var vk = getNoteKey(_nTarget);
+
+  // Save to localStorage immediately (instant feedback)
+  setNote(_nTarget, txt);
+  closeNotesModal();
+
+  // Save to Supabase (sync to all devices)
+  var authorName = currentUser ? currentUser.displayName : 'Unknown';
+  var promise = txt ?
+    sbSaveNote(vk, _nTarget.visitDate, _nTarget.client, _nTarget.mobile,
+               _nTarget.employee, txt, authorName) :
+    sbDeleteNote(vk);
+
+  promise
+    .then(function() {
+      showCopyToast(txt ? '\uD83D\uDCDD Note saved & synced to all devices!' : 'Note removed');
+    })
+    .catch(function(e) {
+      showCopyToast(txt ? '\uD83D\uDCDD Note saved locally (sync failed)' : 'Note removed locally');
+      console.warn('[AMROCK CRM] Note sync failed:', e);
+    });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PATCH: openNotesModal → load from Supabase first
+═══════════════════════════════════════════════════════════ */
+var _origOpenNotesMod = openNotesModal;
+openNotesModal = function(r) {
+  if (!r) r = window._panelRow;
+  if (!r) return;
+  _nTarget = r;
+  var vk = getNoteKey(r);
+
+  // Show modal immediately with local note
+  var localNote = getNote(r);
+  var exEl = document.getElementById('notesExisting');
+  if (exEl) {
+    if (localNote) {
+      exEl.innerHTML = '<div style="font-size:10px;font-weight:600;color:var(--txt2);margin-bottom:4px;text-transform:uppercase">Saved note:</div><div style="font-size:12px;color:var(--txt);line-height:1.6">' + esc(localNote) + '</div>';
+      exEl.style.display = 'block';
+    } else exEl.style.display = 'none';
+  }
+  var taEl = document.getElementById('notesText');
+  if (taEl) taEl.value = localNote;
+  var modal = document.getElementById('notesModal');
+  if (modal) modal.classList.add('open');
+
+  // Then fetch latest from Supabase (update if newer)
+  sbGetNote(vk).then(function(sbNote) {
+    if (sbNote && sbNote !== localNote) {
+      // Supabase has newer/different note
+      setNote(r, sbNote); // update local cache
+      if (taEl) taEl.value = sbNote;
+      if (exEl) {
+        exEl.innerHTML = '<div style="font-size:10px;font-weight:600;color:#10b981;margin-bottom:4px;text-transform:uppercase">\u2705 Synced from team:</div><div style="font-size:12px;color:var(--txt);line-height:1.6">' + esc(sbNote) + '</div>';
+        exEl.style.display = 'block';
+      }
+    }
+  }).catch(function() {});
+};
+
+/* ═══════════════════════════════════════════════════════════
+   ANNOUNCEMENTS SYSTEM
+═══════════════════════════════════════════════════════════ */
+var _sbAnnouncements = [];
+var _sbReadIds = [];
+
+function loadAnnouncements() {
+  sbGetAnnouncements().then(function(items) {
+    _sbAnnouncements = items || [];
+    renderAnnouncements();
+  }).catch(function() {});
+}
+
+function renderAnnouncements() {
+  var container = document.getElementById('announcementBanner');
+  if (!container) return;
+  var username = currentUser ? currentUser.displayName : '';
+  var unread = _sbAnnouncements.filter(function(a) {
+    return _sbReadIds.indexOf(a.id) < 0;
+  });
+  if (!unread.length) { container.style.display = 'none'; return; }
+
+  var priorityColor = { urgent: '#ef4444', normal: '#7c3aed', info: '#3b82f6' };
+  var priorityIcon = { urgent: '\uD83D\uDD34', normal: '\uD83D\uDFE3', info: '\uD83D\uDD35' };
+  var html = '';
+  unread.slice(0, 3).forEach(function(a) {
+    var col = priorityColor[a.priority] || '#7c3aed';
+    var icon = priorityIcon[a.priority] || '\uD83D\uDFE3';
+    html += '<div class="ann-item" style="border-left:3px solid ' + col + '">';
+    html += '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">';
+    html += '<div><div style="font-size:12px;font-weight:700;color:var(--txt);margin-bottom:2px">' + icon + ' ' + esc(a.title) + '</div>';
+    html += '<div style="font-size:11px;color:var(--txt2);line-height:1.5">' + esc(a.message) + '</div>';
+    html += '<div style="font-size:10px;color:var(--txt3);margin-top:3px">By ' + esc(a.author) + '</div></div>';
+    html += '<button onclick="markAnnRead(' + a.id + ')" style="flex-shrink:0;background:none;border:none;color:var(--txt3);font-size:16px;cursor:pointer;padding:0;line-height:1">\u00d7</button>';
+    html += '</div></div>';
+  });
+  container.innerHTML = html;
+  container.style.display = 'block';
+}
+
+function markAnnRead(id) {
+  _sbReadIds.push(id);
+  sbMarkRead(id, currentUser ? currentUser.displayName : 'unknown');
+  renderAnnouncements();
+}
+
+/* Management: post announcement modal */
+function openAnnouncementModal() {
+  var modal = document.getElementById('annModal');
+  if (modal) modal.classList.add('open');
+}
+function closeAnnouncementModal() {
+  var modal = document.getElementById('annModal');
+  if (modal) modal.classList.remove('open');
+  document.getElementById('annTitle').value = '';
+  document.getElementById('annMsg').value = '';
+}
+function postAnnouncement() {
+  var title = (document.getElementById('annTitle').value || '').trim();
+  var msg = (document.getElementById('annMsg').value || '').trim();
+  var priority = document.getElementById('annPriority').value || 'normal';
+  if (!title || !msg) { showCopyToast('Please fill in title and message'); return; }
+  var author = currentUser ? currentUser.displayName : 'Management';
+  sbPostAnnouncement(title, msg, priority, author, 24).then(function() {
+    showCopyToast('\uD83D\uDCE2 Announcement posted!');
+    closeAnnouncementModal();
+    loadAnnouncements();
+  }).catch(function(e) { showCopyToast('Failed to post: ' + e.message); });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PATCH doLogin to start Supabase services
+═══════════════════════════════════════════════════════════ */
+var _origDoLoginSB = doLogin;
+doLogin = function() {
+  _origDoLoginSB();
+  // Start Supabase services after a short delay (after login completes)
+  setTimeout(function() {
+    if (!currentUser) return;
+    sbUpdateActivity('dash');
+    sbStartRealtime();
+    loadAnnouncements();
+  }, 2000);
+};
+
+/* Also load announcements when returning to dash */
+var _origShowSecAnn = showSec;
+showSec = function(sec) {
+  _origShowSecAnn(sec);
+  if (sec === 'dash' && currentUser) loadAnnouncements();
+};
 
 </script>
 </body>
