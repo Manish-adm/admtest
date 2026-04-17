@@ -1274,6 +1274,9 @@ body:hover .cursor-glow{opacity:1}
 .mob-card{animation:cardSwipeIn .25s ease both}
 @keyframes cardSwipeIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
 
+
+html[data-theme="light"] #dataErrBanner{background:rgba(220,38,38,.08);color:#991b1b;border-color:rgba(220,38,38,.25)}
+html[data-theme="light"] #dataErrBanner button{background:rgba(220,38,38,.1)!important;border-color:rgba(220,38,38,.3)!important;color:#991b1b!important}
 </style>
 </head>
 <body>
@@ -1440,7 +1443,7 @@ body:hover .cursor-glow{opacity:1}
   </div>
 
   <div class="page">
-    <div id="dataErrBanner" style="display:none;align-items:center;justify-content:space-between;gap:10px;padding:10px 16px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);border-radius:var(--r12);margin-bottom:10px;font-size:12px;color:#fca5a5;flex-wrap:wrap"></div>
+    <div id="dataErrBanner" style="display:none;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);border-radius:var(--r12);margin-bottom:10px;font-size:12px;color:#fca5a5;flex-wrap:wrap;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)"></div>
     <div id="alertBanner" style="display:none"></div>
 
     <div class="emp-day" id="empDayCard">
@@ -1826,6 +1829,81 @@ var QUOTES=[
   {q:'Premium stone, premium service, premium results.',a:'AMROCK Wisdom'}
 ];
 
+/* QUOTES & MOTIVATION - defined early for page-load access */
+var LOCAL_QUOTES=[
+  {q:'Every visit is a seed. Follow-up is the water.',a:'AMROCK Wisdom'},
+  {q:'The stone that builders rejected became the cornerstone.',a:'Proverbs 118:22'},
+  {q:'Follow up today \u2014 it could be tomorrow\'s deal.',a:'AMROCK Wisdom'},
+  {q:'Build relationships, not just buildings.',a:'AMROCK Wisdom'},
+  {q:'Quality is remembered long after the price is forgotten.',a:'Gucci Family Motto'},
+  {q:'Success is the sum of small efforts repeated every day.',a:'Robert Collier'},
+  {q:'A visit logged is an opportunity tracked.',a:'AMROCK Wisdom'},
+  {q:'The secret of getting ahead is getting started.',a:'Mark Twain'},
+  {q:'Premium stone, premium service, premium results.',a:'AMROCK Wisdom'},
+  {q:'Your consistency today builds tomorrow\'s results.',a:'AMROCK Wisdom'},
+  {q:'Every client you meet is a door to a new opportunity.',a:'AMROCK Wisdom'},
+  {q:'In sales, it\'s not about having the right opportunity. It\'s about handling opportunities right.',a:'Mark Hunter'},
+  {q:'People don\'t buy what you do, they buy why you do it.',a:'Simon Sinek'},
+  {q:'The difference between try and triumph is a little umph.',a:'Marvin Phillips'},
+  {q:'Stone by stone, relationship by relationship \u2014 we build legacies.',a:'AMROCK Wisdom'},
+  {q:'Don\'t count the days \u2014 make the days count.',a:'Muhammad Ali'},
+  {q:'A smile and a follow-up can close any deal.',a:'AMROCK Wisdom'},
+  {q:'The best salespeople are problem solvers first.',a:'AMROCK Wisdom'},
+  {q:'Your attitude, not your aptitude, determines your altitude.',a:'Zig Ziglar'},
+  {q:'Discipline is doing what needs to be done even when you don\'t feel like it.',a:'AMROCK Wisdom'},
+  {q:'Great stone work lasts centuries. Great relationships last longer.',a:'AMROCK Wisdom'},
+  {q:'One follow-up can change a year. One year of follow-ups can change a career.',a:'AMROCK Wisdom'},
+  {q:'Success usually comes to those who are too busy to be looking for it.',a:'Henry David Thoreau'},
+  {q:'The harder you work, the luckier you get.',a:'Gary Player'},
+  {q:'Every no gets you closer to a yes.',a:'AMROCK Wisdom'},
+  {q:'Clients don\'t care how much you know until they know how much you care.',a:'AMROCK Wisdom'},
+  {q:'A stone placed well is art. A relationship placed well is wealth.',a:'AMROCK Wisdom'},
+  {q:'The best time to follow up was yesterday. The second best time is now.',a:'AMROCK Wisdom'},
+  {q:'Your reputation is your most valuable product.',a:'AMROCK Wisdom'},
+  {q:'Sales is not about selling anymore, but about building trust.',a:'Siva Devaki'}
+];
+
+function fetchMotivation(){
+  var banner=document.getElementById('calMotiveText');
+  if(!banner){setTimeout(showLocalQuote,100);return;}
+  banner.style.opacity='.4';
+  var done=false;
+  var timer=setTimeout(function(){if(!done){done=true;showLocalQuote();}},4000);
+  function success(text){
+    if(done)return;done=true;clearTimeout(timer);
+    // text is already formatted '\u201Cquote\u201D \u2014 Author'
+    banner.innerHTML='<em>'+text+'</em>';banner.style.opacity='1';
+  }
+  fetch('https://zenquotes.io/api/random')
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d&&d[0]&&d[0].q)success('\u201C'+d[0].q+'\u201D'+(d[0].a?'\u2009\u2014\u2009'+d[0].a:''));
+      else throw new Error('empty');
+    })
+    .catch(function(){
+      fetch('https://api.quotable.io/random?tags=inspirational,success,motivational')
+        .then(function(r){return r.json();})
+        .then(function(d){
+          if(d&&d.content)success('\u201C'+d.content+'\u201D\u2009\u2014\u2009'+(d.author||''));
+          else throw new Error('empty');
+        })
+        .catch(function(){if(!done){done=true;clearTimeout(timer);showLocalQuote();}});
+    });
+}
+
+function showLocalQuote(){
+  var banner=document.getElementById('calMotiveText');if(!banner)return;
+  // Cycle through all quotes before repeating
+  if(_qUsed.length>=LOCAL_QUOTES.length)_qUsed=[];
+  var available=LOCAL_QUOTES.map(function(_,i){return i;}).filter(function(i){return _qUsed.indexOf(i)<0;});
+  var idx=available[Math.floor(Math.random()*available.length)];
+  _qUsed.push(idx);
+  var q=LOCAL_QUOTES[idx];
+  banner.innerHTML='<em>\u201C'+esc(q.q)+'\u201D</em>'+(q.a?' <span style="opacity:.65;font-style:normal">\u2014 '+esc(q.a)+'</span>':'');
+  banner.style.opacity='1';
+}
+
+
 /* ── UTILS ── */
 function pad(n){return(n<10?'0':'')+n;}
 function fmtToday(){var d=new Date();return pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear();}
@@ -1998,12 +2076,12 @@ function fetchData(cb){
     rows.reverse();
     return rows;
   }
-  // Try published URL first, fall back to original sheet URL
   var _fetchOne=function(u){return fetch(u).then(function(r){if(!r.ok){var e=new Error('HTTP '+r.status);e.status=r.status;throw e;}return r.text();});};
-  _fetchOne(url).catch(function(){return _fetchOne(urlFallback);})
+  _fetchOne(url).catch(function(){return _fetchOne(url2);}).catch(function(){return _fetchOne(urlFallback);})
     .then(function(text){
       hideLoad();
       var rows=parseRows(text);
+      console.log('[AMROCK CRM] Data loaded: '+rows.length+' rows');
       var errDiv=document.getElementById('dataErrBanner');if(errDiv)errDiv.style.display='none';
       try{sessionStorage.setItem(ck,JSON.stringify(rows));}catch(e){}
       cb(rows);
@@ -2098,6 +2176,7 @@ function toggleSort(col){
 
 /* ── MAIN UPDATE ── */
 function updateAll(){
+  if(!ALL_ROWS||typeof isMgmt==='undefined')return;
   var allSrc=isMgmt?ALL_ROWS:myRows;
   var dR=dfRows(allSrc);
   var today=fmtToday();
@@ -2268,6 +2347,7 @@ function rowClick(gIdx,src){
 /* ── SCORECARD ── */
 function calcScore(d){return Math.min(100,Math.round((d.visits*0.4)+(d.done*0.3)+((d.visits>0?(1-d.overdue/d.visits):0)*30)));}
 function buildSC(rows){
+  if(!rows||!rows.length){document.getElementById('scorecardGrid').innerHTML='<p style="color:var(--txt2);font-size:12px;padding:8px">No data for period.</p>';return;}
   var eD={},eL={};
   rows.forEach(function(r){if(!r.employee)return;if(!eD[r.employee])eD[r.employee]={visits:0,km:0,done:0,overdue:0};eD[r.employee].visits++;eD[r.employee].km+=parseKm(r.kilometers);var s=getSt(r);if(s==='Done')eD[r.employee].done++;if(s==='Overdue')eD[r.employee].overdue++;if(!eL[r.employee]||r.visitDate>eL[r.employee])eL[r.employee]=r.visitDate;});
   var sorted=Object.keys(eD).sort(function(a,b){return calcScore(eD[b])-calcScore(eD[a]);});
@@ -2593,7 +2673,12 @@ function doLogin(){
       if(klbl2)klbl2.textContent='Total KM';
     }
     var q=getQuote();
-    document.getElementById('greetBox').innerHTML='<h2>'+getGreet()+', <em>'+esc(user.displayName)+'</em> \uD83D\uDC4B</h2><p>\u201C'+esc(q.q)+'\u201D \u2014 <em>'+esc(q.a)+'</em></p>';
+    // Set greeting and login quote using LOCAL_QUOTES
+    var greetQ=LOCAL_QUOTES[Math.floor(Math.random()*LOCAL_QUOTES.length)];
+    document.getElementById('greetBox').innerHTML='<h2>'+getGreet()+', <em>'+esc(user.displayName)+'</em> \uD83D\uDC4B</h2><p>\u201C'+esc(greetQ.q)+'\u201D \u2014 <em>'+esc(greetQ.a)+'</em></p>';
+    // Also update login page quote strip
+    var lqEl=document.getElementById('loginQuote');
+    if(lqEl){var lqPick=LOCAL_QUOTES[Math.floor(Math.random()*LOCAL_QUOTES.length)];lqEl.innerHTML='\u201C'+esc(lqPick.q)+'\u201D <span style="opacity:.65">\u2014 '+esc(lqPick.a)+'</span>';}
     updateAll();startAR();initClock();setupMobSidebar();
     btn.textContent='Sign in \u2192';btn.disabled=false;
     document.getElementById('dfBar').style.display='flex';
@@ -2731,10 +2816,10 @@ window.generatePetrolReport=function(){
 
 /* ── INIT ── */
 initTheme();
-// Login quote from LOCAL_QUOTES array
+// Login quote (LOCAL_QUOTES now defined at top)
 (function(){
   var lq=document.getElementById('loginQuote');
-  if(!lq)return;
+  if(!lq||typeof LOCAL_QUOTES==='undefined')return;
   var pick=LOCAL_QUOTES[Math.floor(Math.random()*LOCAL_QUOTES.length)];
   lq.innerHTML='\u201C'+esc(pick.q)+'\u201D <span style="opacity:.65">\u2014 '+esc(pick.a)+'</span>';
 })();
@@ -3014,6 +3099,7 @@ var P3C=['#7c3aed','#3b82f6','#ec4899','#f59e0b','#10b981','#0891b2','#f97316','
 var sixmoI=null,clientTypeI=null;
 
 function buildAnalytics(rows){
+  if(!rows||!rows.length)rows=[];
   var allSrc=isMgmt?ALL_ROWS:myRows;
   var isDark=document.documentElement.getAttribute('data-theme')==='dark'||!document.documentElement.getAttribute('data-theme');
   var gc=isDark?'rgba(255,255,255,.05)':'rgba(99,102,241,.08)';
@@ -3111,6 +3197,7 @@ function getRptRange(period){
   return{from:'',to:today};
 }
 function runReports(){
+  if(!ALL_ROWS||!ALL_ROWS.length)return;
   var allSrc=isMgmt?ALL_ROWS:myRows;
   var efEl=document.getElementById('rptEmpFilter');
   var selEmp=efEl?efEl.value:'';
@@ -3284,7 +3371,7 @@ function buildDuplicates(src){
     var key='rmk_'+rmk.slice(0,40);
     if(addedKeys[key])return;addedKeys[key]=true;
     dupes.push({
-      reason:'Identical remark ('+entries.length+' entries): '+entries[0].remark.substring(0,50)+(entries[0].remark.length>50?'...':''),
+      reason:'Identical remark ('+entries.length+' entries)',
       rows:entries.slice(0,8),
       type:'remark'
     });
@@ -3301,7 +3388,7 @@ function buildDuplicates(src){
     d.rows.forEach(function(r){var k=(r.client||'').toLowerCase()+'_'+r.visitDate+'_'+(r.employee||'');if(!seenK[k]){seenK[k]=true;uniqueRows.push(r);}});
     uniqueRows=uniqueRows.slice(0,8);
     h2+='<div class="dup-card"><div class="dup-hdr">';
-    h2+='<div class="dup-title">'+icon+' '+esc(d.rows[0].client||'Unknown')+'</div>';
+    h2+='<div class="dup-title">'+icon+' '+esc((d.rows&&d.rows[0]&&d.rows[0].client)||'Unknown')+'</div>';
     h2+='<span class="dup-why">'+esc(d.reason)+'</span></div>';
     h2+='<div class="dup-rows">';
     uniqueRows.forEach(function(r){
@@ -3404,6 +3491,7 @@ function buildEvtIndex(rows,viewMode){
 }
 
 function renderCalendar(){
+  if(!ALL_ROWS)return;
   var src=isMgmt?ALL_ROWS:myRows;
   var ef=document.getElementById('calEmpFilter');var selE=ef?ef.value:'';
   var vm=(document.getElementById('calViewMode')||{}).value||'all';
@@ -3554,78 +3642,6 @@ function showCalDetail(iso,evts){
 }
 
 /* ── MOTIVATIONAL QUOTES (online + local fallback) ── */
-var LOCAL_QUOTES=[
-  {q:'Every visit is a seed. Follow-up is the water.',a:'AMROCK Wisdom'},
-  {q:'The stone that builders rejected became the cornerstone.',a:'Proverbs 118:22'},
-  {q:'Follow up today \u2014 it could be tomorrow\'s deal.',a:'AMROCK Wisdom'},
-  {q:'Build relationships, not just buildings.',a:'AMROCK Wisdom'},
-  {q:'Quality is remembered long after the price is forgotten.',a:'Gucci Family Motto'},
-  {q:'Success is the sum of small efforts repeated every day.',a:'Robert Collier'},
-  {q:'A visit logged is an opportunity tracked.',a:'AMROCK Wisdom'},
-  {q:'The secret of getting ahead is getting started.',a:'Mark Twain'},
-  {q:'Premium stone, premium service, premium results.',a:'AMROCK Wisdom'},
-  {q:'Your consistency today builds tomorrow\'s results.',a:'AMROCK Wisdom'},
-  {q:'Every client you meet is a door to a new opportunity.',a:'AMROCK Wisdom'},
-  {q:'In sales, it\'s not about having the right opportunity. It\'s about handling opportunities right.',a:'Mark Hunter'},
-  {q:'People don\'t buy what you do, they buy why you do it.',a:'Simon Sinek'},
-  {q:'The difference between try and triumph is a little umph.',a:'Marvin Phillips'},
-  {q:'Stone by stone, relationship by relationship \u2014 we build legacies.',a:'AMROCK Wisdom'},
-  {q:'Don\'t count the days \u2014 make the days count.',a:'Muhammad Ali'},
-  {q:'A smile and a follow-up can close any deal.',a:'AMROCK Wisdom'},
-  {q:'The best salespeople are problem solvers first.',a:'AMROCK Wisdom'},
-  {q:'Your attitude, not your aptitude, determines your altitude.',a:'Zig Ziglar'},
-  {q:'Discipline is doing what needs to be done even when you don\'t feel like it.',a:'AMROCK Wisdom'},
-  {q:'Great stone work lasts centuries. Great relationships last longer.',a:'AMROCK Wisdom'},
-  {q:'One follow-up can change a year. One year of follow-ups can change a career.',a:'AMROCK Wisdom'},
-  {q:'Success usually comes to those who are too busy to be looking for it.',a:'Henry David Thoreau'},
-  {q:'The harder you work, the luckier you get.',a:'Gary Player'},
-  {q:'Every no gets you closer to a yes.',a:'AMROCK Wisdom'},
-  {q:'Clients don\'t care how much you know until they know how much you care.',a:'AMROCK Wisdom'},
-  {q:'A stone placed well is art. A relationship placed well is wealth.',a:'AMROCK Wisdom'},
-  {q:'The best time to follow up was yesterday. The second best time is now.',a:'AMROCK Wisdom'},
-  {q:'Your reputation is your most valuable product.',a:'AMROCK Wisdom'},
-  {q:'Sales is not about selling anymore, but about building trust.',a:'Siva Devaki'}
-];
-
-function fetchMotivation(){
-  var banner=document.getElementById('calMotiveText');
-  if(!banner){setTimeout(showLocalQuote,100);return;}
-  banner.style.opacity='.4';
-  var done=false;
-  var timer=setTimeout(function(){if(!done){done=true;showLocalQuote();}},4000);
-  function success(text){
-    if(done)return;done=true;clearTimeout(timer);
-    // text is already formatted '\u201Cquote\u201D \u2014 Author'
-    banner.innerHTML='<em>'+text+'</em>';banner.style.opacity='1';
-  }
-  fetch('https://zenquotes.io/api/random')
-    .then(function(r){return r.json();})
-    .then(function(d){
-      if(d&&d[0]&&d[0].q)success('\u201C'+d[0].q+'\u201D'+(d[0].a?'\u2009\u2014\u2009'+d[0].a:''));
-      else throw new Error('empty');
-    })
-    .catch(function(){
-      fetch('https://api.quotable.io/random?tags=inspirational,success,motivational')
-        .then(function(r){return r.json();})
-        .then(function(d){
-          if(d&&d.content)success('\u201C'+d.content+'\u201D\u2009\u2014\u2009'+(d.author||''));
-          else throw new Error('empty');
-        })
-        .catch(function(){if(!done){done=true;clearTimeout(timer);showLocalQuote();}});
-    });
-}
-
-function showLocalQuote(){
-  var banner=document.getElementById('calMotiveText');if(!banner)return;
-  // Cycle through all quotes before repeating
-  if(_qUsed.length>=LOCAL_QUOTES.length)_qUsed=[];
-  var available=LOCAL_QUOTES.map(function(_,i){return i;}).filter(function(i){return _qUsed.indexOf(i)<0;});
-  var idx=available[Math.floor(Math.random()*available.length)];
-  _qUsed.push(idx);
-  var q=LOCAL_QUOTES[idx];
-  banner.innerHTML='<em>\u201C'+esc(q.q)+'\u201D</em>'+(q.a?' <span style="opacity:.65;font-style:normal">\u2014 '+esc(q.a)+'</span>':'');
-  banner.style.opacity='1';
-}
 
 var _p4UA=updateAll;
 updateAll=function(){
