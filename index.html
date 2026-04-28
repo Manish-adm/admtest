@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
@@ -748,6 +748,80 @@ html[data-theme="light"] .mob-card-v2-act+.mob-card-v2-act{border-left-color:rgb
   .mob-app-inner{height:58px}
 }
 
+/* CLEAN CRM REFRESH */
+html[data-theme="light"]{
+  --bg:#eef3fb;--glass:rgba(255,255,255,.74);--glass2:rgba(255,255,255,.93);
+  --border:rgba(88,101,242,.18);--border2:rgba(88,101,242,.10);
+  --txt:#15172f;--txt2:#53617c;--txt3:#8a96ad;
+  --accent:#6d5dfc;--accent2:#1e88e5;--accent3:#7c5cff;
+}
+body{background:
+  radial-gradient(circle at 12% 0%,rgba(124,92,255,.18),transparent 30%),
+  radial-gradient(circle at 92% 18%,rgba(30,136,229,.14),transparent 28%),
+  linear-gradient(135deg,var(--bg),#f8fbff 48%,#edf5ff);
+}
+.navbar{height:auto;min-height:58px;padding:10px 18px;align-items:center;box-shadow:0 10px 35px rgba(24,31,65,.08)}
+.nb-tabs{flex-wrap:wrap;overflow:visible;gap:5px}
+.nb-tab{padding:6px 10px;border:1px solid transparent}
+.nb-tab.active{border-color:rgba(124,92,255,.28);box-shadow:0 6px 20px rgba(109,93,252,.12)}
+.nb-srch{width:170px}
+.nb-srch:focus{width:210px}
+#navGuide,.mob-more-item[data-guide],#secGuide{display:none!important}
+body:not(.logged-in) .mob-app-bar,body:not(.logged-in) .mob-btabs,body:not(.logged-in) .mob-more-menu{display:none!important}
+.tcard{border-radius:18px;box-shadow:0 14px 40px rgba(24,31,65,.08)}
+.tcard table{table-layout:fixed}
+.tcard .col-num{width:38px}
+.tcard .col-emp{width:160px}
+.tcard .col-date{width:105px}
+.tcard .col-client{width:145px}
+.tcard .col-site{width:23%}
+.tcard .col-km{width:58px;text-align:center}
+.tcard .col-product{width:18%}
+.tcard .col-remark{width:21%}
+.tcard .col-follow{width:140px}
+.tcard .col-photo{width:56px;text-align:center}
+.tcard th:nth-child(1),.tcard td:nth-child(1){width:38px}
+.tcard th:nth-child(2),.tcard td:nth-child(2){width:160px}
+.tcard th:nth-child(3),.tcard td:nth-child(3){width:105px}
+.tcard th:nth-child(4),.tcard td:nth-child(4){width:145px}
+.tcard th:nth-child(5),.tcard td:nth-child(5){width:25%}
+.tcard th:nth-child(6),.tcard td:nth-child(6){width:58px;text-align:center}
+.tcard th:nth-child(7),.tcard td:nth-child(7){width:18%}
+.tcard th:nth-child(8),.tcard td:nth-child(8){width:20%}
+.tcard th:nth-child(9),.tcard td:nth-child(9){width:140px}
+.tcard th:nth-child(10),.tcard td:nth-child(10){width:56px;text-align:center}
+.tcard .col-num{width:38px!important}
+.tcard .col-emp{width:160px!important}
+.tcard .col-date{width:105px!important}
+.tcard .col-client{width:145px!important}
+.tcard .col-site{width:23%!important}
+.tcard .col-km{width:58px!important;text-align:center}
+.tcard .col-product{width:18%!important}
+.tcard .col-remark{width:21%!important}
+.tcard .col-follow{width:140px!important}
+.tcard .col-photo{width:56px!important;text-align:center}
+.mrow td{word-break:break-word}
+.product-cell,.remark-cell{white-space:normal;line-height:1.5}
+html[data-theme="light"] .fbar select,
+html[data-theme="light"] .fbar input[type=date],
+html[data-theme="light"] .df-select,
+html[data-theme="light"] .df-dt,
+html[data-theme="light"] .cal-emp-sel,
+html[data-theme="light"] .sel-f select,
+html[data-theme="light"] .sel-f input{background:#fff;color:#15172f;border-color:rgba(88,101,242,.18)}
+html[data-theme="light"] select option{background:#fff;color:#15172f}
+html[data-theme="light"] .badge.b-up,
+html[data-theme="light"] .mob-chip{color:#5b35d5}
+html[data-theme="light"] .kpi,
+html[data-theme="light"] .ch-card,
+html[data-theme="light"] .si-card,
+html[data-theme="light"] .cal-wrap,
+html[data-theme="light"] .cal-detail{background:rgba(255,255,255,.82)}
+@media(max-width:768px){
+  .navbar{padding:8px 12px!important}
+  .nb-srch-w{flex-basis:100%}
+}
+
 </style>
 </head>
 <body>
@@ -839,7 +913,6 @@ html[data-theme="light"] .mob-card-v2-act+.mob-card-v2-act{border-left-color:rgb
       <button class="nb-tab" id="navAll" onclick="showSec('all')">&#128203; All Visits</button>
       <button class="nb-tab" id="navToday" onclick="showSec('today')">&#9989; Today</button>
       <button class="nb-tab" id="navPetrol" onclick="openPetrolModal()" style="display:none">&#9981; Petrol</button>
-      <button class="nb-tab" id="navGuide" onclick="showSec('guide')">&#10067; Guide</button>
       <button class="nb-tab" id="navCal" onclick="showSec('cal')">&#128197; Calendar</button>
       <button class="nb-tab" id="navAnalytics" onclick="showSec('analytics')">&#128201; Analytics</button>
       <button class="nb-tab" id="navReports" onclick="showSec('reports')">&#128196; Reports</button>
@@ -870,7 +943,9 @@ html[data-theme="light"] .mob-card-v2-act+.mob-card-v2-act{border-left-color:rgb
     <button class="nb-tab" onclick="showSec('all');toggleMobMenu()">&#128203; All Visits</button>
     <button class="nb-tab" onclick="showSec('today');toggleMobMenu()">&#9989; Today</button>
     <button class="nb-tab" id="mnavPetrol" onclick="openPetrolModal();toggleMobMenu()" style="display:none">&#9981; Petrol</button>
-    <button class="nb-tab" onclick="showSec('guide');toggleMobMenu()">&#10067; Guide</button>
+    <button class="nb-tab" onclick="showSec('cal');toggleMobMenu()">&#128197; Calendar</button>
+    <button class="nb-tab" onclick="showSec('analytics');toggleMobMenu()">&#128201; Analytics</button>
+    <button class="nb-tab" onclick="showSec('reports');toggleMobMenu()">&#128196; Reports</button>
     <button class="nb-tab" onclick="logout()">&#8594; Sign out</button>
   </div>
 
@@ -1039,7 +1114,7 @@ html[data-theme="light"] .mob-card-v2-act+.mob-card-v2-act{border-left-color:rgb
         </div>
       </div>
       <div class="cal-wrap">
-        <div style="display:none"><!-- cal-hdr replaced -->
+        <!-- cal-hdr replaced -->
         <div class="cal-dow-row" id="calDowRow"></div>
         <div class="cal-grid" id="calGrid"></div>
         <div class="cal-legend">
@@ -1135,7 +1210,6 @@ html[data-theme="light"] .mob-card-v2-act+.mob-card-v2-act{border-left-color:rgb
     <button class="mob-more-item" onclick="showSec('overdue');toggleMoreMenu()">&#9889; Overdue follow-ups <span id="mnavOverdue"></span></button>
     <button class="mob-more-item" id="mmDead" onclick="showSec('dead');toggleMoreMenu()" style="display:none">&#128100; Inactive clients</button>
     <button class="mob-more-item" id="mmPetrol" onclick="openPetrolModal();toggleMoreMenu()" style="display:none">&#9981; Petrol report</button>
-    <button class="mob-more-item" onclick="showSec('guide');toggleMoreMenu()">&#10067; Status guide</button>
     <button class="mob-more-item" onclick="showSec('cal');toggleMoreMenu()">&#128197; Calendar</button>
     <button class="mob-more-item" onclick="showSec('analytics');toggleMoreMenu()">&#128201; Analytics</button>
     <button class="mob-more-item" onclick="showSec('reports');toggleMoreMenu()">&#128196; Reports</button>
@@ -1278,6 +1352,27 @@ function parseKm(v){var n=parseFloat(String(v||'0').replace(/[^0-9.]/g,''));retu
 function getGreet(){var h=new Date().getHours();if(h<12)return'Good morning';if(h<17)return'Good afternoon';if(h<21)return'Good evening';return'Good night';}
 function getQuote(){return QUOTES[new Date().getDate()%QUOTES.length];}
 function getOvLevel(dd){var d=daysDiff(dd);if(d>14)return'r';if(d>7)return'o';return'y';}
+function cleanEmployeeName(n){return String(n||'').trim().replace(/\s+/g,' ').toUpperCase();}
+function uniqueEmployeeNames(rows){
+  var seen={},out=[];
+  (rows||[]).forEach(function(r){var n=cleanEmployeeName(r.employee);if(n&&!seen[n]){seen[n]=true;out.push(n);}});
+  return out.sort();
+}
+function fillEmployeeSelect(sel,rows,allLabel){
+  if(!sel)return;
+  var cur=cleanEmployeeName(sel.value);
+  sel.innerHTML='<option value="">'+(allLabel||'All employees')+'</option>';
+  uniqueEmployeeNames(rows).forEach(function(n){var o=document.createElement('option');o.value=n;o.textContent=n;sel.appendChild(o);});
+  if(cur&&Array.from(sel.options).some(function(o){return o.value===cur;}))sel.value=cur;
+}
+function resetAllFilters(){
+  dfS={preset:'today',from:'',to:''};
+  [['dfSelect','today'],['empF',''],['stF',''],['dtFrom',''],['dtTo',''],['dfFrom',''],['dfTo',''],['clF',''],['rptEmpFilter',''],['rptPeriodFilter','thismonth'],['calEmpFilter',''],['calViewMode','all']].forEach(function(p){
+    var el=document.getElementById(p[0]);if(el)el.value=p[1];
+  });
+  var cust=document.getElementById('dfCustom');if(cust)cust.classList.remove('open');
+  sortCol='visitDate';sortDir='desc';curPage=1;curSec='dash';
+}
 
 /* ── SEARCH HIGHLIGHT ── */
 function hl(text){
@@ -1302,7 +1397,7 @@ function animC(el,target,dur){if(!el)return;dur=dur||1200;var start=performance.
 
 /* ── THEME ── */
 function toggleTheme(){var h=document.documentElement,isDark=h.getAttribute('data-theme')!=='light';h.setAttribute('data-theme',isDark?'light':'dark');document.getElementById('themeBtn').textContent=isDark?'\u2600':'\uD83C\uDF19';localStorage.setItem('amrock_theme',isDark?'light':'dark');}
-function initTheme(){var s=localStorage.getItem('amrock_theme')||'dark';document.documentElement.setAttribute('data-theme',s);var b=document.getElementById('themeBtn');if(b)b.textContent=s==='light'?'\u2600':'\uD83C\uDF19';}
+function initTheme(){var s=localStorage.getItem('amrock_theme')||'light';document.documentElement.setAttribute('data-theme',s);var b=document.getElementById('themeBtn');if(b)b.textContent=s==='light'?'\u2600':'\uD83C\uDF19';}
 
 /* ── DENSITY ── */
 function showCopyToast(msg){
@@ -1393,7 +1488,7 @@ function fetchData(cb){
       var d={};cols.forEach(function(col,i){d[col]=(row.c[i]&&row.c[i].v!=null)?String(row.c[i].v):'';});
       if(!d['Name of Employee'])return;
       rows.push({
-        employee:d['Name of Employee']||'',entryType:d['ENTRY TYPE']||'',
+        employee:cleanEmployeeName(d['Name of Employee']),entryType:d['ENTRY TYPE']||'',
         client:d['Name of Client']||'',clientType:d['Client Type']||'',mobile:d['Client Mobile No.']||'',
         site:d['Site Name']||'',prevSiteAddr:d['Previous Site Name & Address']||'',siteAddress:d['Site Address']||'',
         kilometers:d['Kilometers']||'',totalKm:d['Total Kilometers (All Edits)']||'',
@@ -1582,8 +1677,8 @@ function renderTablePage(){
   var start=(curPage-1)*PAGE_SIZE;
   var end=Math.min(start+PAGE_SIZE,total);
   var pageRows=allSortedRows.slice(start,end);
-  function sHdr(col,lbl){var sc=sortCol===col;return'<th class="srt'+(sc?' srt-'+sortDir:'')+'" onclick="toggleSort(\''+col+'\')">'+lbl+'<span class="sic">'+(sc?(sortDir==='asc'?'\u2191':'\u2193'):'\u2195')+'</span></th>';}
-  var h='<tr><th style="width:26px">#</th>'+(showEmp?sHdr('employee','Employee'):'')+sHdr('date','Date/Type')+sHdr('client','Client')+'<th>Site</th>'+sHdr('km','KM')+'<th>Product</th><th>Remark</th>'+sHdr('followup','Follow-up')+'<th>\uD83D\uDCF7</th></tr>';
+  function sHdr(col,lbl,cls){var sc=sortCol===col;return'<th class="'+(cls||'')+' srt'+(sc?' srt-'+sortDir:'')+'" onclick="toggleSort(\''+col+'\')">'+lbl+'<span class="sic">'+(sc?(sortDir==='asc'?'\u2191':'\u2193'):'\u2195')+'</span></th>';}
+  var h='<tr><th class="col-num">#</th>'+(showEmp?sHdr('employee','Employee','col-emp'):'')+sHdr('date','Date/Type','col-date')+sHdr('client','Client','col-client')+'<th class="col-site">Site</th>'+sHdr('km','KM','col-km')+'<th class="col-product">Product</th><th class="col-remark">Remark</th>'+sHdr('followup','Follow-up','col-follow')+'<th class="col-photo">\uD83D\uDCF7</th></tr>';
   document.getElementById('tHead').innerHTML=h;
   document.getElementById('tBody').innerHTML=buildRows(pageRows,showEmp,start)||'<tr><td colspan="'+(showEmp?10:9)+'" style="text-align:center;padding:28px;color:var(--txt2)">No records match filters.</td></tr>';
   document.getElementById('tableRecCount').textContent=total+' records';
@@ -1626,16 +1721,16 @@ function buildRows(rows,showEmp,globalStart){
     var kmCell='<div style="font-size:13px;font-weight:800;color:#a78bfa;text-align:center">'+km.toFixed(0)+'</div>';
     if(r.totalKm&&r.totalKm!==r.kilometers){var kd=kmA-km;kmCell+='<div style="font-size:9px;color:var(--txt3);text-align:center">Tot:'+kmA.toFixed(0)+(kd>0.5?' <span style=\'color:#fbbf24\'>+'+kd.toFixed(0)+'</span>':'')+'</div>';}
     html+='<tr class="mrow" onclick="rowClick('+(globalStart+j)+',\'all\')">';
-    html+='<td style="color:var(--txt3);font-size:10px;font-weight:600;width:26px">'+(globalStart+j+1)+'</td>';
-    if(showEmp)html+='<td><div class="erow"><div class="eav">'+getIn(r.employee)+'</div><span style="font-weight:600;font-size:12px">'+hl(r.employee)+'</span></div></td>';
-    html+='<td style="white-space:nowrap"><div style="font-size:12px;font-weight:600">'+esc(r.visitDate)+'</div>'+(r.entryType?'<div style="margin-top:2px"><span class="et-tag">'+esc(r.entryType)+'</span></div>':'')+'</td>';
-    html+='<td><div style="font-weight:700;font-size:12px">'+hl(r.client)+'</div><div style="font-size:10px;color:var(--txt3)">'+hl(r.mobile||'-')+'</div></td>';
-    html+='<td><div style="font-size:12px;font-weight:600">'+hl(r.site)+'</div><div style="font-size:10px;color:var(--txt3)">'+hl(r.siteAddress||'\u2014')+'</div></td>';
-    html+='<td>'+kmCell+'</td>';
-    html+='<td style="font-size:12px;color:var(--txt2);max-width:100px">'+hl(r.product||'\u2014')+'</td>';
-    html+='<td style="font-size:11px;color:var(--txt2);max-width:130px;line-height:1.4">'+hl(r.remark||'\u2014')+'</td>';
-    html+='<td style="white-space:nowrap"><div style="font-size:11px;font-weight:600">'+esc(r.followupDate||'\u2014')+'</div><div style="margin-top:3px"><span class="badge '+bc+'">'+dot+' '+sTxt+'</span></div></td>';
-    html+='<td>'+(r.photos?'<a href="'+esc(r.photos)+'" target="_blank" class="act-a aa-ph" onclick="event.stopPropagation()">\uD83D\uDCF7</a>':'')+'</td></tr>';
+    html+='<td class="col-num" style="color:var(--txt3);font-size:10px;font-weight:600">'+(globalStart+j+1)+'</td>';
+    if(showEmp)html+='<td class="col-emp"><div class="erow"><div class="eav">'+getIn(r.employee)+'</div><span style="font-weight:600;font-size:12px">'+hl(r.employee)+'</span></div></td>';
+    html+='<td class="col-date" style="white-space:nowrap"><div style="font-size:12px;font-weight:600">'+esc(r.visitDate)+'</div>'+(r.entryType?'<div style="margin-top:2px"><span class="et-tag">'+esc(r.entryType)+'</span></div>':'')+'</td>';
+    html+='<td class="col-client"><div style="font-weight:700;font-size:12px">'+hl(r.client)+'</div><div style="font-size:10px;color:var(--txt3)">'+hl(r.mobile||'-')+'</div></td>';
+    html+='<td class="col-site"><div style="font-size:12px;font-weight:600">'+hl(r.site)+'</div><div style="font-size:10px;color:var(--txt3)">'+hl(r.siteAddress||'\u2014')+'</div></td>';
+    html+='<td class="col-km">'+kmCell+'</td>';
+    html+='<td class="col-product product-cell">'+hl(r.product||'\u2014')+'</td>';
+    html+='<td class="col-remark remark-cell">'+hl(r.remark||'\u2014')+'</td>';
+    html+='<td class="col-follow" style="white-space:nowrap"><div style="font-size:11px;font-weight:600">'+esc(r.followupDate||'\u2014')+'</div><div style="margin-top:3px"><span class="badge '+bc+'">'+dot+' '+sTxt+'</span></div></td>';
+    html+='<td class="col-photo">'+(r.photos?'<a href="'+esc(r.photos)+'" target="_blank" class="act-a aa-ph" onclick="event.stopPropagation()">\uD83D\uDCF7</a>':'')+'</td></tr>';
   }
   if(rows.length>0){
     var co=showEmp?10:9;
@@ -2298,7 +2393,7 @@ document.getElementById('kpiAll').addEventListener('click',function(){showSec('a
 document.getElementById('kpiToday').addEventListener('click',function(){showSec('today');});
 document.getElementById('kpiDue').addEventListener('click',function(){document.getElementById('stF').value='Due today';showSec('all');});
 document.getElementById('kpiOver').addEventListener('click',function(){showSec('overdue');});
-document.getElementById('resetBtn').addEventListener('click',function(){document.getElementById('empF').value='';document.getElementById('stF').value='';document.getElementById('dtFrom').value='';document.getElementById('dtTo').value='';var f=document.getElementById('clF');if(f)f.value='';sortCol='visitDate';sortDir='desc';updateAll();});
+document.getElementById('resetBtn').addEventListener('click',function(){resetAllFilters();updateAll();});
 ['empF','stF','dtFrom','dtTo'].forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener('change',updateAll);});
 var srchEl=document.getElementById('clF');if(srchEl)srchEl.addEventListener('input',function(){curPage=1;updateAll();});
 document.getElementById('lgoutBtn').addEventListener('click',logout);
@@ -2310,22 +2405,25 @@ function doLogin(){
   var u=document.getElementById('uname').value.trim().toLowerCase(),p=document.getElementById('upass').value.trim();
   var user=USERS[u];if(!user||user.password!==p){document.getElementById('errBx').style.display='block';return;}
   document.getElementById('errBx').style.display='none';
+  resetAllFilters();
   var btn=document.getElementById('lbtn');btn.textContent='Loading\u2026';btn.disabled=true;
   currentUser=user;isMgmt=user.role==='management';
   fetchData(function(rows){
     ALL_ROWS=rows;myRows=isMgmt?ALL_ROWS:ALL_ROWS.filter(function(r){return r.employee.toLowerCase().indexOf(user.employeeName.toLowerCase())>=0;});
+    document.body.classList.add('logged-in');
     document.getElementById('loginPage').style.display='none';document.getElementById('dashPage').style.display='block';
     document.getElementById('nbAv').textContent=getIn(user.displayName);document.getElementById('nbName').textContent=user.displayName;
+    ['annBtn','navDead','navDupes','mnavDead','mmDead','mmDupes'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
     if(isMgmt){
-      var ef=document.getElementById('empF');ef.style.display='inline-block';
-      var seen={};ALL_ROWS.forEach(function(r){if(r.employee&&!seen[r.employee]){seen[r.employee]=true;var o=document.createElement('option');o.value=r.employee;o.textContent=r.employee;ef.appendChild(o);}});
+      var ef=document.getElementById('empF');ef.style.display='inline-block';fillEmployeeSelect(ef,ALL_ROWS,'All employees');
       document.getElementById('scorecardSection').style.display='block';document.getElementById('chartSection').style.display='block';
       document.getElementById('smartInsightsCard').style.display='block';
-      document.getElementById('navDead').style.display='';document.getElementById('navDupes').style.display='';document.getElementById('mnavDead').style.display='';document.getElementById('mmDead').style.display='';
+      document.getElementById('navDead').style.display='';document.getElementById('navDupes').style.display='';document.getElementById('mnavDead').style.display='';document.getElementById('mmDead').style.display='';var mmDup=document.getElementById('mmDupes');if(mmDup)mmDup.style.display='';
       document.getElementById('navPetrol').style.display='';document.getElementById('mnavPetrol').style.display='';document.getElementById('mmPetrol').style.display='';
     }else{
       document.getElementById('scorecardSection').style.display='none';document.getElementById('chartSection').style.display='none';
       document.getElementById('navDead').style.display='none';document.getElementById('navOverdue').style.display='none';
+      document.getElementById('navDupes').style.display='none';
       document.getElementById('mnavOverdue').style.display='none';
       document.getElementById('navPetrol').style.display='';
       document.getElementById('mmPetrol').style.display='';
@@ -2342,14 +2440,18 @@ function doLogin(){
     document.getElementById('dfBar').style.display='flex';
     var ep=document.getElementById('empPersonal');if(ep)ep.style.display=!isMgmt?'block':'none';
     var dc=document.getElementById('empDayCard');if(dc)dc.style.display=!isMgmt?'block':'none';
+    showSec('dash');
   });
 }
 function logout(){
   if(rfInt)clearInterval(rfInt);
+  document.body.classList.remove('logged-in');
   document.getElementById('dashPage').style.display='none';document.getElementById('loginPage').style.display='flex';
   document.getElementById('uname').value='';document.getElementById('upass').value='';
+  ['annBtn','navDead','navDupes','mnavDead','mmDead','mmDupes'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
   var ef=document.getElementById('empF');if(ef){ef.style.display='none';ef.innerHTML='<option value="">All employees</option>';}
-  ALL_ROWS=[];myRows=[];isMgmt=false;currentUser=null;sortCol='visitDate';sortDir='desc';
+  resetAllFilters();
+  ALL_ROWS=[];myRows=[];isMgmt=false;currentUser=null;
 }
 
 /* ── PETROL ── */
@@ -2841,7 +2943,7 @@ function runReports(){
   var selEmp=efEl?efEl.value:'';
   var period=(document.getElementById('rptPeriodFilter')||{}).value||'thismonth';
   var range=getRptRange(period);
-  if(isMgmt&&efEl&&efEl.options.length===1){var seen={};allSrc.forEach(function(r){if(r.employee&&!seen[r.employee]){seen[r.employee]=true;var o=document.createElement('option');o.value=r.employee;o.textContent=r.employee;efEl.appendChild(o);}});}
+  if(isMgmt&&efEl&&efEl.options.length<=1)fillEmployeeSelect(efEl,allSrc,'All employees');
   var filtered=allSrc.filter(function(r){if(selEmp&&r.employee!==selEmp)return false;var iso=ddToIso(r.visitDate);if(range.from&&iso<range.from)return false;if(range.to&&iso>range.to)return false;return true;});
   var pNames={thismonth:'This month',lastmonth:'Last month',thisweek:'This week',last7:'Last 7 days',last30:'Last 30 days',last90:'Last 90 days'};
   var plEl=document.getElementById('rptPeriodLabel');if(plEl)plEl.textContent=(pNames[period]||period)+(selEmp?' — '+selEmp:'');
@@ -2860,7 +2962,7 @@ function buildWeeklyRpt(allSrc,range){
   var now=new Date(),weeks=[];
   for(var wi=7;wi>=0;wi--){var wE=new Date(now);wE.setDate(wE.getDate()-wi*7);var wS=new Date(wE);wS.setDate(wS.getDate()-6);weeks.push({from:wS.toISOString().slice(0,10),to:wE.toISOString().slice(0,10),lbl:wS.toISOString().slice(5,10).replace('-','/')});}
   var empF=(document.getElementById('rptEmpFilter')||{}).value||'';
-  var eN=[...new Set(allSrc.map(function(r){return r.employee;}).filter(Boolean))].sort();
+  var eN=uniqueEmployeeNames(allSrc);
   var visE=empF?[empF]:eN;
   document.getElementById('rptWeeklyHead').innerHTML='<tr><th>Employee</th>'+weeks.map(function(w){return'<th>'+w.lbl+'</th>';}).join('')+'<th>Total</th></tr>';
   var h='';
@@ -3034,10 +3136,11 @@ function calNext(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalend
 
 function buildEvtIndex(rows){
   var idx={};
+  var mode=(document.getElementById('calViewMode')||{}).value||'all';
   function add(iso,r,type){if(!idx[iso])idx[iso]=[];idx[iso].push({r:r,type:type});}
   rows.forEach(function(r){
-    if(r.visitDate){var i=ddToIso(r.visitDate);if(i)add(i,r,'visit');}
-    if(r.followupDate){var i2=ddToIso(r.followupDate);if(i2){var s=getSt(r);add(i2,r,s==='Overdue'?'ov':s==='Due today'?'due':s==='Done'?'done':'up');}}
+    if((mode==='all'||mode==='visits')&&r.visitDate){var i=ddToIso(r.visitDate);if(i)add(i,r,'visit');}
+    if((mode==='all'||mode==='followup'||mode==='overdue')&&r.followupDate){var i2=ddToIso(r.followupDate);if(i2){var s=getSt(r);var type=s==='Overdue'?'ov':s==='Due today'?'due':s==='Done'?'done':'up';if(mode!=='overdue'||type==='ov')add(i2,r,type);}}
   });
   return idx;
 }
@@ -3045,7 +3148,7 @@ function buildEvtIndex(rows){
 function renderCalendar(){
   var src=isMgmt?ALL_ROWS:myRows;
   var ef=document.getElementById('calEmpFilter');var selE=ef?ef.value:'';
-  if(isMgmt&&ef&&ef.options.length===1){var seen={};src.forEach(function(r){if(r.employee&&!seen[r.employee]){seen[r.employee]=true;var o=document.createElement('option');o.value=r.employee;o.textContent=r.employee;ef.appendChild(o);}});}
+  if(isMgmt&&ef&&ef.options.length<=1)fillEmployeeSelect(ef,src,'All employees');
   var rows=selE?src.filter(function(r){return r.employee===selE;}):src;
   document.getElementById('calMonthLbl').textContent=CMONTHS[calMonth];
   document.getElementById('calYearLbl').textContent=calYear;
@@ -3199,6 +3302,34 @@ buildSC=function(rows){
 /* ════════════════════════════════════════
    SUPABASE BACKEND + NEW FEATURES
 ════════════════════════════════════════ */
+/* FINAL NAV + FILTER REPAIR */
+showSec=function(sec){
+  if(sec==='guide')sec='dash';
+  curSec=sec;
+  ['dash','overdue','dead','all','today','guide','cal','analytics','reports','dupes'].forEach(function(s){
+    var el=document.getElementById('sec'+s.charAt(0).toUpperCase()+s.slice(1));
+    if(!el)return;
+    el.style.display=sec===s?'block':'none';
+    if(sec===s){el.classList.remove('sec-show');void el.offsetWidth;el.classList.add('sec-show');}
+  });
+  document.querySelectorAll('.nb-tab,.mob-btab,.mob-app-tab').forEach(function(t){t.classList.remove('active');});
+  var navMap={dash:'navDash',overdue:'navOverdue',dead:'navDead',all:'navAll',today:'navToday',cal:'navCal',analytics:'navAnalytics',reports:'navReports',dupes:'navDupes'};
+  var nav=document.getElementById(navMap[sec]);if(nav)nav.classList.add('active');
+  var btMap={dash:'btDash',all:'btVisits',today:'btToday'};
+  var bt=document.getElementById(btMap[sec])||document.getElementById('btMore');if(bt)bt.classList.add('active');
+  var appMap={dash:'abtDash',all:'abtVisits',today:'abtToday',cal:'abtCal'};
+  var app=document.getElementById(appMap[sec])||document.getElementById('abtMore');if(app)app.classList.add('active');
+  var mobNav=document.getElementById('mobNav');if(mobNav)mobNav.classList.remove('open');
+  var more=document.getElementById('mobMoreMenu');if(more)more.classList.remove('open');
+  var dc=document.getElementById('empDayCard');if(dc)dc.style.display=(!isMgmt&&sec==='dash')?'block':'none';
+  var ep=document.getElementById('empPersonal');if(ep)ep.style.display=(!isMgmt&&sec==='dash')?'block':'none';
+  var dfb=document.getElementById('dfBar');if(dfb)dfb.style.display=sec==='dash'?'flex':'none';
+  if(sec==='cal'){renderCalendar();var mEl=document.getElementById('calMotiveText');if(mEl&&(mEl.textContent===''||mEl.textContent==='Loading inspiration...'))fetchMotivation();}
+  if(sec==='analytics')buildAnalytics(dfRows(isMgmt?ALL_ROWS:myRows));
+  if(sec==='reports')runReports();
+  if(sec==='dupes')buildDuplicates(isMgmt?ALL_ROWS:myRows);
+  updateAll();
+};
 </script>
 </body>
 </html>
