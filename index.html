@@ -1305,6 +1305,16 @@ function toggleTheme(){var h=document.documentElement,isDark=h.getAttribute('dat
 function initTheme(){var s=localStorage.getItem('amrock_theme')||'dark';document.documentElement.setAttribute('data-theme',s);var b=document.getElementById('themeBtn');if(b)b.textContent=s==='light'?'\u2600':'\uD83C\uDF19';}
 
 /* ── DENSITY ── */
+function showCopyToast(msg){
+  var el=document.getElementById('copyToast');
+  if(!el)return;
+  el.textContent=msg||'Done';
+  el.classList.add('show');
+  clearTimeout(showCopyToast._t);
+  showCopyToast._t=setTimeout(function(){el.classList.remove('show');},2200);
+}
+function showToast(msg){showCopyToast(msg);}
+
 function toggleDensity(){
   curDensity=(curDensity+1)%3;
   var d=DENSITIES[curDensity];
@@ -1927,7 +1937,19 @@ function sbFetch(method,table,body,params){
     headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json',
       'Prefer':method==='POST'?'return=representation,resolution=merge-duplicates':'return=representation'},
     body:body?JSON.stringify(body):undefined
-  }).then(function(r){if(!r.ok)return r.text().then(function(t){throw new Error(t);});return r.json().catch(function(){return[];});});
+  }).then(function(r){
+    if(!r.ok)return r.text().then(function(t){
+      var err=new Error(t||('Supabase request failed: '+r.status));
+      err.status=r.status;err.table=table;
+      throw err;
+    });
+    return r.json().catch(function(){return[];});
+  });
+}
+
+function sbIsSchemaMissing(e){
+  var m=(e&&e.message?e.message:String(e||'')).toLowerCase();
+  return m.indexOf('could not find the table')>=0||m.indexOf('schema cache')>=0||m.indexOf('pgrst205')>=0||m.indexOf('relation')>=0;
 }
 
 /* ── NOTES ── */
@@ -1990,7 +2012,10 @@ function postAnnouncement(){
     document.getElementById('annModal').classList.remove('open');
     document.getElementById('annTitle').value='';document.getElementById('annMsg').value='';
     loadAnns();
-  }).catch(function(e){showToast('Failed: '+e.message);});
+  }).catch(function(e){
+    if(sbIsSchemaMissing(e))showToast('Supabase schema pending - announcement not posted yet');
+    else showToast('Failed: '+(e&&e.message?e.message:'Announcement not posted'));
+  });
 }
 
 /* ── PATCH saveNote to sync to Supabase ── */
@@ -2008,8 +2033,9 @@ saveNote=function(){
   var p=txt?sbSaveNote(vk,_nTarget.visitDate,_nTarget.client,_nTarget.mobile,_nTarget.employee,txt,author):sbDeleteNote(vk);
   p.then(function(){
     showToast(txt?'\uD83D\uDCDD Note synced to all devices!':'Note deleted from all devices');
-  }).catch(function(){
-    showToast(txt?'\uD83D\uDCDD Note saved locally (sync failed)':'Note removed locally');
+  }).catch(function(e){
+    if(sbIsSchemaMissing(e))showToast(txt?'\uD83D\uDCDD Note saved locally':'Note removed locally');
+    else showToast(txt?'\uD83D\uDCDD Note saved locally (sync failed)':'Note removed locally');
   });
 };
 
@@ -2239,59 +2265,33 @@ window.addEventListener('online',function(){
   startClock();
 })();
 
-
-</script>
-
-  <!-- NEW MOBILE APP BAR -->
-  <div class="mob-app-bar" id="mobAppBar">
-    <div class="mob-app-bar-bg"></div>
-    <div class="mob-app-inner">
-      <button class="mob-app-tab active" id="abtDash" onclick="showSec('dash')">
-        <span class="mob-app-ic">&#128202;</span><span class="mob-app-lbl">Home</span>
-      </button>
-      <button class="mob-app-tab" id="abtVisits" onclick="showSec('all')">
-        <span class="mob-app-ic">&#128203;</span><span class="mob-app-lbl">Visits</span>
-      </button>
-      <button class="mob-app-tab" id="abtToday" onclick="showSec('today')">
-        <span class="mob-app-ic">&#9989;</span><span class="mob-app-lbl">Today</span>
-        <span class="mob-app-badge" id="abtOvBdg" style="display:none">0</span>
-      </button>
-      <button class="mob-app-tab" id="abtCal" onclick="showSec('cal')">
-        <span class="mob-app-ic">&#128197;</span><span class="mob-app-lbl">Calendar</span>
-      </button>
-      <button class="mob-app-tab" id="abtMore" onclick="document.getElementById('mobNav').classList.toggle('open')">
-        <span class="mob-app-ic">&#9776;</span><span class="mob-app-lbl">Menu</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- ANNOUNCEMENT MODAL -->
-  <div class="modal-ov" id="annModal">
-    <div class="modal-box" style="max-width:480px">
-      <div class="modal-hdr">
-        <div class="modal-ttl">&#128226; Post Announcement</div>
-        <button class="modal-close" onclick="document.getElementById('annModal').classList.remove('open')">&#10005;</button>
-      </div>
-      <div style="padding:16px;display:flex;flex-direction:column;gap:10px">
-        <div><label style="font-size:10px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:5px">Title</label>
-          <input id="annTitle" type="text" placeholder="e.g. Team meeting today at 3pm" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--r8);background:rgba(255,255,255,.07);color:var(--txt);font-size:13px;outline:none;font-family:'Sora',sans-serif"/></div>
-        <div><label style="font-size:10px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:5px">Message</label>
-          <textarea id="annMsg" rows="3" placeholder="Full message for your team..." style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--r8);background:rgba(255,255,255,.07);color:var(--txt);font-size:12px;outline:none;font-family:'Sora',sans-serif;resize:vertical;line-height:1.5"></textarea></div>
-        <div><label style="font-size:10px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:5px">Priority</label>
-          <select id="annPriority" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:var(--r8);background:rgba(255,255,255,.07);color:var(--txt);font-size:12px;outline:none;font-family:'Sora',sans-serif">
-            <option value="normal">&#128994; Normal</option><option value="urgent">&#128308; Urgent</option><option value="info">&#128309; Info</option>
-          </select></div>
-      </div>
-      <div style="padding:11px 16px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end">
-        <button class="sel-btn cancel" onclick="document.getElementById('annModal').classList.remove('open')">Cancel</button>
-        <button class="sel-btn confirm" onclick="postAnnouncement()">&#128226; Post to All</button>
-      </div>
-    </div>
-  </div>
-
-</body></html>';
-  var w=window.open('','_blank');if(!w){alert('Allow popups.');return;}w.document.write(h);w.document.close();w.focus();setTimeout(function(){w.print();},400);
-});
+/* Inject late-added UI without breaking the main script. */
+(function(){
+  if(document.getElementById('mobAppBar'))return;
+  document.body.insertAdjacentHTML('beforeend',
+    '<div class="mob-app-bar" id="mobAppBar">'+
+      '<div class="mob-app-bar-bg"></div>'+
+      '<div class="mob-app-inner">'+
+        '<button class="mob-app-tab active" id="abtDash" onclick="showSec(&quot;dash&quot;)"><span class="mob-app-ic">&#128202;</span><span class="mob-app-lbl">Home</span></button>'+
+        '<button class="mob-app-tab" id="abtVisits" onclick="showSec(&quot;all&quot;)"><span class="mob-app-ic">&#128203;</span><span class="mob-app-lbl">Visits</span></button>'+
+        '<button class="mob-app-tab" id="abtToday" onclick="showSec(&quot;today&quot;)"><span class="mob-app-ic">&#9989;</span><span class="mob-app-lbl">Today</span><span class="mob-app-badge" id="abtOvBdg" style="display:none">0</span></button>'+
+        '<button class="mob-app-tab" id="abtCal" onclick="showSec(&quot;cal&quot;)"><span class="mob-app-ic">&#128197;</span><span class="mob-app-lbl">Calendar</span></button>'+
+        '<button class="mob-app-tab" id="abtMore" onclick="document.getElementById(&quot;mobNav&quot;).classList.toggle(&quot;open&quot;)"><span class="mob-app-ic">&#9776;</span><span class="mob-app-lbl">Menu</span></button>'+
+      '</div>'+
+    '</div>'+
+    '<div class="modal-ov" id="annModal">'+
+      '<div class="modal-box" style="max-width:480px">'+
+        '<div class="modal-hdr"><div class="modal-ttl">&#128226; Post Announcement</div><button class="modal-close" onclick="document.getElementById(&quot;annModal&quot;).classList.remove(&quot;open&quot;)">&#10005;</button></div>'+
+        '<div style="padding:16px;display:flex;flex-direction:column;gap:10px">'+
+          '<div><label style="font-size:10px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:5px">Title</label><input id="annTitle" type="text" placeholder="e.g. Team meeting today at 3pm" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--r8);background:rgba(255,255,255,.07);color:var(--txt);font-size:13px;outline:none;font-family:Sora,sans-serif"/></div>'+
+          '<div><label style="font-size:10px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:5px">Message</label><textarea id="annMsg" rows="3" placeholder="Full message for your team..." style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--r8);background:rgba(255,255,255,.07);color:var(--txt);font-size:12px;outline:none;font-family:Sora,sans-serif;resize:vertical;line-height:1.5"></textarea></div>'+
+          '<div><label style="font-size:10px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:5px">Priority</label><select id="annPriority" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:var(--r8);background:rgba(255,255,255,.07);color:var(--txt);font-size:12px;outline:none;font-family:Sora,sans-serif"><option value="normal">&#128994; Normal</option><option value="urgent">&#128308; Urgent</option><option value="info">&#128309; Info</option></select></div>'+
+        '</div>'+
+        '<div style="padding:11px 16px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end"><button class="sel-btn cancel" onclick="document.getElementById(&quot;annModal&quot;).classList.remove(&quot;open&quot;)">Cancel</button><button class="sel-btn confirm" onclick="postAnnouncement()">&#128226; Post to All</button></div>'+
+      '</div>'+
+    '</div>'
+  );
+})();
 
 /* ── KPI CLICK LISTENERS ── */
 document.getElementById('kpiAll').addEventListener('click',function(){showSec('all');});
@@ -3199,5 +3199,6 @@ buildSC=function(rows){
 /* ════════════════════════════════════════
    SUPABASE BACKEND + NEW FEATURES
 ════════════════════════════════════════ */
+</script>
 </body>
 </html>
