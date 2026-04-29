@@ -10,13 +10,275 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#eef4ff;--bg2:#f9fbff;--panel:rgba(255,255,255,.84);--panel2:#fff;--line:#dce5f5;--line2:#eef3fb;--text:#11172f;--muted:#61708d;--soft:#94a3b8;--brand:#6254f3;--brand2:#0ea5e9;--green:#059669;--amber:#d97706;--red:#dc2626;--pink:#db2777;--shadow:0 16px 48px rgba(32,48,85,.12);--r:16px}
+:root{--bg:#eef4ff;--bg2:#f9fbff;--panel:rgba(255,255,255,.84);--panel2:#fff;--line:#dce5f5;--line2:#eef3fb;--text:#11172f;--muted:#61708d;--soft:#94a3b8;--brand:#6254f3;--brand2:#0ea5e9;--green:#059669;--amber:#d97706;--red:#dc2626;--pink:#db2777;--shadow:0 16px 48px rgba(32,48,85,.12);--r:16px;
+/* Animation variables */
+--ease-spring:cubic-bezier(.34,1.56,.64,1);--ease-smooth:cubic-bezier(.4,0,.2,1);--ease-bounce:cubic-bezier(.68,-.55,.265,1.55)}
 html[data-theme=dark]{--bg:#071024;--bg2:#0d1730;--panel:rgba(15,25,52,.86);--panel2:#101a34;--line:#263456;--line2:#1b2949;--text:#eef4ff;--muted:#a2afc7;--soft:#6f7c96;--shadow:0 18px 54px rgba(0,0,0,.34)}
-body{font-family:Sora,system-ui,sans-serif;background:radial-gradient(circle at 10% 0,rgba(98,84,243,.20),transparent 30%),radial-gradient(circle at 92% 12%,rgba(14,165,233,.16),transparent 28%),linear-gradient(135deg,var(--bg),var(--bg2));color:var(--text);min-height:100vh;font-size:13px}
+body{font-family:Sora,system-ui,sans-serif;background:radial-gradient(circle at 10% 0,rgba(98,84,243,.20),transparent 30%),radial-gradient(circle at 92% 12%,rgba(14,165,233,.16),transparent 28%),linear-gradient(135deg,var(--bg),var(--bg2));color:var(--text);min-height:100vh;font-size:13px;overflow-x:hidden}
 button,input,select,textarea{font-family:inherit}
 button{cursor:pointer}
+
+/* ═══════════════════════════════════════════
+   CREATIVE ANIMATIONS - Added layer
+   ═══════════════════════════════════════════ */
+
+/* Ambient floating orbs in background */
+body::before,body::after{content:"";position:fixed;border-radius:50%;pointer-events:none;z-index:0;filter:blur(80px);opacity:.35;animation:floatOrb 18s ease-in-out infinite alternate}
+body::before{width:420px;height:420px;background:radial-gradient(circle,rgba(98,84,243,.3),transparent 70%);top:-80px;left:-120px;animation-delay:-4s}
+body::after{width:340px;height:340px;background:radial-gradient(circle,rgba(14,165,233,.25),transparent 70%);bottom:-60px;right:-100px;animation-delay:-9s}
+@keyframes floatOrb{0%{transform:translate(0,0) scale(1)}25%{transform:translate(40px,60px) scale(1.1)}50%{transform:translate(-30px,100px) scale(.95)}75%{transform:translate(70px,30px) scale(1.05)}100%{transform:translate(-20px,-40px) scale(1)}}
+
+/* Login card entrance - dramatic reveal */
+.login-card{animation:loginReveal .8s var(--ease-spring) both}
+@keyframes loginReveal{from{opacity:0;transform:translateY(40px) scale(.92) rotateX(8deg);filter:blur(6px)}to{opacity:1;transform:translateY(0) scale(1) rotateX(0);filter:blur(0)}}
+
+/* Login prestats stagger */
+.prestats div{animation:statPop .5s var(--ease-spring) both}
+.prestats div:nth-child(1){animation-delay:.3s}
+.prestats div:nth-child(2){animation-delay:.45s}
+.prestats div:nth-child(3){animation-delay:.6s}
+@keyframes statPop{from{opacity:0;transform:translateY(20px) scale(.85)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+/* Login button shimmer */
+.primary{position:relative;overflow:hidden;transition:transform .2s var(--ease-smooth),box-shadow .2s}
+.primary::after{content:"";position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);animation:btnShimmer 3s ease-in-out infinite;pointer-events:none}
+@keyframes btnShimmer{0%,100%{left:-100%}50%{left:150%}}
+
+/* Input focus glow */
+.field input{transition:border-color .3s,box-shadow .3s,transform .2s}
+.field input:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(98,84,243,.15),0 4px 16px rgba(98,84,243,.1);transform:translateY(-1px)}
+
+/* Topbar slide-down */
+.topbar{animation:topbarSlide .5s var(--ease-smooth) both;transition:background .3s,box-shadow .3s}
+@keyframes topbarSlide{from{opacity:0;transform:translateY(-100%)}to{opacity:1;transform:translateY(0)}}
+
+/* Nav buttons liquid hover */
+.nav button,.side-nav button{position:relative;overflow:hidden;transition:color .25s,transform .15s}
+.nav button::before,.side-nav button::before{content:"";position:absolute;inset:0;background:rgba(98,84,243,.12);border-radius:12px;transform:scaleX(0);transform-origin:left;transition:transform .3s var(--ease-smooth)}
+.nav button:hover::before,.side-nav button:hover::before,.nav button.active::before,.side-nav button.active::before{transform:scaleX(1)}
+.nav button:hover,.side-nav button:hover{transform:translateY(-1px)}
+
+/* KPI cards staggered entrance with counter glow */
+.cards .card{animation:cardSlideUp .45s var(--ease-spring) both;position:relative;overflow:hidden}
+.cards .card:nth-child(1){animation-delay:.05s}
+.cards .card:nth-child(2){animation-delay:.1s}
+.cards .card:nth-child(3){animation-delay:.15s}
+.cards .card:nth-child(4){animation-delay:.2s}
+.cards .card:nth-child(5){animation-delay:.25s}
+.cards .card:nth-child(6){animation-delay:.3s}
+@keyframes cardSlideUp{from{opacity:0;transform:translateY(30px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+/* Card top gradient shimmer */
+.card::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:linear-gradient(90deg,var(--brand),var(--brand2),var(--pink),var(--brand));background-size:300% 100%;animation:gradientFlow 4s linear infinite}
+@keyframes gradientFlow{0%{background-position:0% 50%}100%{background-position:300% 50%}}
+
+/* Card number pulse on hover */
+.card b{transition:transform .25s var(--ease-spring),color .25s}
+.card:hover b{transform:scale(1.08);color:var(--brand)}
+
+/* Panel entrance */
+.panel{animation:panelFade .5s var(--ease-smooth) both}
+@keyframes panelFade{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* Charts container entrance */
+.charts .panel,.analytics-grid .panel{animation:chartReveal .6s var(--ease-smooth) both}
+.charts .panel:nth-child(1),.analytics-grid .panel:nth-child(1){animation-delay:.1s}
+.charts .panel:nth-child(2),.analytics-grid .panel:nth-child(2){animation-delay:.2s}
+.charts .panel:nth-child(3),.analytics-grid .panel:nth-child(3){animation-delay:.3s}
+.charts .panel:nth-child(4),.analytics-grid .panel:nth-child(4){animation-delay:.15s}
+.charts .panel:nth-child(5),.analytics-grid .panel:nth-child(5){animation-delay:.25s}
+.charts .panel:nth-child(6),.analytics-grid .panel:nth-child(6){animation-delay:.35s}
+@keyframes chartReveal{from{opacity:0;transform:translateY(24px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+/* Table row cascade animation */
+tr{animation:rowCascade .35s var(--ease-smooth) both}
+@keyframes rowCascade{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
+tbody tr:nth-child(1){animation-delay:.02s}
+tbody tr:nth-child(2){animation-delay:.04s}
+tbody tr:nth-child(3){animation-delay:.06s}
+tbody tr:nth-child(4){animation-delay:.08s}
+tbody tr:nth-child(5){animation-delay:.10s}
+tbody tr:nth-child(6){animation-delay:.12s}
+tbody tr:nth-child(7){animation-delay:.14s}
+tbody tr:nth-child(8){animation-delay:.16s}
+tbody tr:nth-child(9){animation-delay:.18s}
+tbody tr:nth-child(10){animation-delay:.20s}
+
+/* Table row hover with slide indicator */
+tr:hover td{background:rgba(98,84,243,.06);transition:background .2s}
+tr{position:relative}
+
+/* Pill micro-interactions */
+.pill{transition:transform .2s var(--ease-spring),box-shadow .2s}
+.pill:hover{transform:scale(1.06) translateY(-1px);box-shadow:0 4px 12px rgba(98,84,243,.15)}
+.pill.over{animation:pulseOverdue 2.5s ease-in-out infinite}
+@keyframes pulseOverdue{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.2)}50%{box-shadow:0 0 0 6px rgba(220,38,38,0)}}
+
+/* Tag bounce-in */
+.tag{animation:tagBounce .4s var(--ease-bounce) both}
+@keyframes tagBounce{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
+
+/* Alert bar slide + pulse */
+.alert{animation:alertSlide .5s var(--ease-spring) both;position:relative;overflow:hidden}
+@keyframes alertSlide{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:translateX(0)}}
+.alert::after{content:"";position:absolute;left:0;top:0;width:4px;height:100%;background:var(--red);animation:alertPulse 1.5s ease-in-out infinite}
+@keyframes alertPulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* Insight items stagger */
+.insight{animation:insightSlide .4s var(--ease-smooth) both;transition:background .2s,transform .15s}
+.insight:nth-child(1){animation-delay:.05s}
+.insight:nth-child(2){animation-delay:.1s}
+.insight:nth-child(3){animation-delay:.15s}
+.insight:nth-child(4){animation-delay:.2s}
+.insight:nth-child(5){animation-delay:.25s}
+@keyframes insightSlide{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:translateX(0)}}
+.insight:hover{background:rgba(98,84,243,.04);transform:translateX(4px)}
+
+/* Chip float-in */
+.chip{animation:chipFloat .35s var(--ease-spring) both;transition:transform .2s,box-shadow .2s}
+.chip:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(98,84,243,.18)}
+
+/* Mobile card entrance */
+.mcard{animation:mcardRise .4s var(--ease-spring) both;transition:transform .2s,box-shadow .2s,border-color .2s}
+.mcard:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(32,48,85,.14);border-color:rgba(98,84,243,.3)}
+
+/* Avatar pulse ring */
+.avatar{position:relative;transition:transform .2s var(--ease-spring)}
+.avatar:hover{transform:scale(1.08)}
+.avatar::after{content:"";position:absolute;inset:-3px;border-radius:13px;border:2px solid rgba(98,84,243,.3);animation:avatarPulse 3s ease-in-out infinite;pointer-events:none}
+@keyframes avatarPulse{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:.7;transform:scale(1.06)}}
+
+/* Employee avatar color cycle */
+.av{transition:transform .2s var(--ease-spring),background .3s}
+.av:hover{transform:scale(1.15) rotate(5deg)}
+
+/* FAB floating animation */
+.fab{animation:fabFloat 3s ease-in-out infinite}
+@keyframes fabFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.fab:hover{animation:none;transform:translateY(-3px) scale(1.08);box-shadow:0 14px 36px rgba(98,84,243,.35)}
+.fab:active{transform:scale(.95)}
+
+/* Drawer slide with backdrop blur */
+.drawer{transition:transform .35s var(--ease-smooth);backdrop-filter:blur(8px)}
+.drawer.open{transform:translateX(0);animation:drawerBounce .4s var(--ease-spring)}
+@keyframes drawerBounce{0%{transform:translateX(100%)}60%{transform:translateX(-2%)}100%{transform:translateX(0)}}
+
+/* Side nav slide */
+.side-nav.open{animation:sideNavSlide .35s var(--ease-spring)}
+@keyframes sideNavSlide{0%{transform:translateX(-100%)}60%{transform:translateX(2%)}100%{transform:translateX(0)}}
+
+/* Modal pop with blur backdrop */
+.modal{backdrop-filter:blur(4px);animation:modalBgFade .2s ease both}
+@keyframes modalBgFade{from{backdrop-filter:blur(0)}to{backdrop-filter:blur(4px)}}
+.modal-box{animation:modalPop .35s var(--ease-spring) both}
+@keyframes modalPop{from{opacity:0;transform:scale(.88) translateY(20px);filter:blur(4px)}to{opacity:1;transform:scale(1) translateY(0);filter:blur(0)}}
+
+/* Calendar day hover effect */
+.day{transition:background .2s,transform .15s,box-shadow .2s;cursor:pointer}
+.day:hover{background:rgba(98,84,243,.08);transform:scale(1.04);box-shadow:0 2px 8px rgba(98,84,243,.1);z-index:2;position:relative}
+.day.today{animation:todayGlow 2s ease-in-out infinite alternate}
+@keyframes todayGlow{from{box-shadow:inset 0 0 0 1px rgba(98,84,243,.2)}to{box-shadow:inset 0 0 0 2px rgba(98,84,243,.35),0 0 12px rgba(98,84,243,.08)}}
+
+/* Event count badge bounce */
+.event-count{animation:badgeBounce .5s var(--ease-bounce) both}
+@keyframes badgeBounce{from{transform:scale(0)}50%{transform:scale(1.2)}to{transform:scale(1)}}
+
+/* Detail grid stagger */
+.detail-grid .detail{animation:detailFade .3s var(--ease-smooth) both}
+.detail-grid .detail:nth-child(1){animation-delay:.05s}
+.detail-grid .detail:nth-child(2){animation-delay:.1s}
+.detail-grid .detail:nth-child(3){animation-delay:.15s}
+.detail-grid .detail:nth-child(4){animation-delay:.2s}
+.detail-grid .detail:nth-child(5){animation-delay:.25s}
+.detail-grid .detail:nth-child(6){animation-delay:.3s}
+@keyframes detailFade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* Toast notification upgrade */
+.toast{transition:opacity .3s,transform .3s var(--ease-spring);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1)}
+.toast.show{animation:toastBounce .4s var(--ease-spring)}
+@keyframes toastBounce{0%{transform:translateX(-50%) translateY(30px) scale(.9)}60%{transform:translateX(-50%) translateY(-4px) scale(1.02)}100%{transform:translateX(-50%) translateY(0) scale(1)}}
+
+/* Toolbar entrance */
+.toolbar{animation:toolbarSlide .4s var(--ease-smooth) both;animation-delay:.1s}
+@keyframes toolbarSlide{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+
+/* Select/Input hover glow */
+.toolbar select,.toolbar input{transition:border-color .2s,box-shadow .2s,transform .15s}
+.toolbar select:hover,.toolbar input:hover{border-color:rgba(98,84,243,.3);box-shadow:0 2px 8px rgba(98,84,243,.08)}
+.toolbar select:focus,.toolbar input:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(98,84,243,.12);transform:translateY(-1px)}
+
+/* Button hover effects */
+.soft{transition:transform .15s var(--ease-smooth),box-shadow .2s,border-color .2s,background .2s}
+.soft:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(98,84,243,.12);border-color:rgba(98,84,243,.25)}
+.soft:active{transform:translateY(0) scale(.97)}
+
+.icon{transition:transform .15s,box-shadow .2s,border-color .2s}
+.icon:hover{transform:translateY(-1px);border-color:rgba(98,84,243,.3)}
+
+/* Section page transition */
+.section{animation:sectionReveal .4s var(--ease-smooth) both}
+.section.active{animation:sectionReveal .4s var(--ease-smooth) both}
+@keyframes sectionReveal{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+/* Motivation modal special animation */
+.motivation-quote{animation:quoteTypeIn .8s var(--ease-smooth) both;animation-delay:.3s}
+@keyframes quoteTypeIn{from{opacity:0;transform:translateY(16px);filter:blur(4px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
+.motivation-kicker{animation:kickerSlide .5s var(--ease-smooth) both;animation-delay:.15s}
+@keyframes kickerSlide{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
+
+/* Mark logo spin on hover */
+.mark{transition:transform .4s var(--ease-spring)}
+.mark:hover{transform:rotate(360deg) scale(1.1)}
+
+/* Inactive card slide */
+.inactive-list .mcard:nth-child(odd){animation:slideFromLeft .4s var(--ease-smooth) both}
+.inactive-list .mcard:nth-child(even){animation:slideFromRight .4s var(--ease-smooth) both}
+@keyframes slideFromLeft{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideFromRight{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+
+/* Search input expand animation */
+.search input{transition:width .3s var(--ease-smooth),border-color .2s,box-shadow .3s}
+.search input:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(98,84,243,.12),0 4px 16px rgba(98,84,243,.08)}
+
+/* Scrollbar styling */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(98,84,243,.2);border-radius:999px}
+::-webkit-scrollbar-thumb:hover{background:rgba(98,84,243,.35)}
+
+/* Table card entrance */
+.table-card{animation:tableCardRise .5s var(--ease-smooth) both;animation-delay:.15s}
+@keyframes tableCardRise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* Count badge pulse */
+.count{transition:transform .2s,background .2s}
+.count:hover{transform:scale(1.05)}
+
+/* Pager buttons */
+.pager button{transition:transform .15s,box-shadow .2s,background .2s}
+.pager button:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 3px 10px rgba(98,84,243,.1)}
+
+/* Hero grid entrance */
+.hero > *{animation:heroFade .5s var(--ease-smooth) both}
+.hero > *:first-child{animation-delay:.05s}
+.hero > *:last-child{animation-delay:.15s}
+@keyframes heroFade{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* Smooth theme transition */
+*{transition-property:background-color,border-color,color;transition-duration:.3s;transition-timing-function:var(--ease-smooth)}
+/* Exclude elements that shouldn't have color transitions */
+tr,td,th,canvas,iframe,.toast,.drawer,.side-nav,.modal{transition-property:none}
+
+/* Loading skeleton shimmer (for data fetch) */
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.skeleton{background:linear-gradient(90deg,var(--line2) 25%,var(--line) 50%,var(--line2) 75%);background-size:200% 100%;animation:shimmer 1.5s ease-in-out infinite;border-radius:8px;min-height:20px}
+
+/* ═══════════════════════════════════════════
+   END ANIMATIONS - Original styles below
+   ═══════════════════════════════════════════ */
+
 .login{min-height:100vh;display:grid;place-items:center;padding:24px}
-.login-card{width:min(410px,100%);background:var(--panel);border:1px solid var(--line);border-radius:26px;padding:34px;box-shadow:var(--shadow);animation:rise .45s ease both}
+.login-card{width:min(410px,100%);background:var(--panel);border:1px solid var(--line);border-radius:26px;padding:34px;box-shadow:var(--shadow)}
 .login-card h1{font-size:28px;font-weight:800;letter-spacing:0;margin-bottom:4px}
 .login-card p{color:var(--muted);font-size:12px;margin-bottom:18px}
 .prestats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:18px}
@@ -25,7 +287,8 @@ button{cursor:pointer}
 .field{margin-bottom:12px}.field label{display:block;font-size:10px;text-transform:uppercase;color:var(--muted);font-weight:800;margin-bottom:6px}
 .field input{width:100%;height:42px;border:1px solid var(--line);border-radius:12px;background:var(--panel2);color:var(--text);padding:0 13px;outline:none}
 .primary{height:42px;border:0;border-radius:12px;background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;font-weight:800;box-shadow:0 10px 24px rgba(98,84,243,.22)}
-.error{display:none;color:var(--red);background:rgba(220,38,38,.09);border:1px solid rgba(220,38,38,.2);border-radius:12px;padding:9px;margin-bottom:12px;text-align:center}
+.error{display:none;color:var(--red);background:rgba(220,38,38,.09);border:1px solid rgba(220,38,38,.2);border-radius:12px;padding:9px;margin-bottom:12px;text-align:center;animation:shakeError .4s var(--ease-smooth)}
+@keyframes shakeError{0%,100%{transform:translateX(0)}15%,45%,75%{transform:translateX(-6px)}30%,60%{transform:translateX(6px)}}
 .app{display:none}.app.logged{display:block}.hidden{display:none!important}.login.hidden{display:none}
 .topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:12px;padding:12px 18px;background:var(--panel);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
 .brand{display:flex;align-items:center;gap:10px;font-weight:800;white-space:nowrap}.mark{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#ef4444,var(--brand));display:grid;place-items:center;color:#fff;font-weight:900}
@@ -34,7 +297,7 @@ button{cursor:pointer}
 .right{display:flex;align-items:center;gap:8px}.search input{width:220px;height:34px;border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:999px;padding:0 13px;outline:none}
 .icon{height:34px;border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:11px;padding:0 11px;font-weight:800}.danger{color:var(--red);border-color:rgba(220,38,38,.25)}
 .avatar{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,var(--brand),#8b5cf6);color:#fff;display:grid;place-items:center;font-weight:900}
-.page{max-width:1760px;margin:0 auto;padding:18px}.section{display:none;animation:rise .25s ease both}.section.active{display:block}
+.page{max-width:1760px;margin:0 auto;padding:18px;position:relative;z-index:1}.section{display:none}.section.active{display:block}
 .hero{display:grid;grid-template-columns:1.25fr .75fr;gap:14px;margin-bottom:14px}.panel,.card,.table-card,.mcard{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
 .panel{padding:18px}.panel h2{font-size:22px;margin-bottom:4px}.sub{color:var(--muted);font-size:12px}
 .toolbar{display:flex;align-items:center;gap:9px;margin-bottom:12px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:12px}
@@ -43,7 +306,7 @@ button{cursor:pointer}
 .tool-row{display:flex;gap:8px;flex-wrap:wrap}
 .soft{height:38px;border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:11px;padding:0 13px;font-weight:800}.green{color:var(--green)}.red{color:var(--red)}
 .cards{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:14px}.cards.two{grid-template-columns:repeat(2,1fr)}
-.card{padding:15px;position:relative;overflow:hidden}.card:before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:linear-gradient(90deg,var(--brand),var(--brand2))}
+.card{padding:15px;position:relative;overflow:hidden}
 .card small{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;font-weight:900}.card b{display:block;font-size:28px;margin:5px 0}.card span{color:var(--soft);font-size:11px}
 .charts,.analytics-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px}.chart-box{height:285px}.chart-box canvas{height:220px!important}
 .head,.table-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}.head h3,.table-title h3{font-size:16px}.count{font-size:11px;color:var(--muted);border:1px solid var(--line);background:var(--panel2);border-radius:999px;padding:4px 9px;font-weight:800}
@@ -57,17 +320,19 @@ tr:hover td{background:rgba(98,84,243,.06)}.num{width:42px}.emp{width:150px}.dat
 .chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px}.chip{background:rgba(98,84,243,.11);color:var(--brand);border:1px solid rgba(98,84,243,.20);border-radius:999px;padding:6px 10px;font-size:11px;font-weight:800}
 .pager{display:flex;align-items:center;justify-content:space-between;padding:12px 16px}.pager button{height:32px;border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:9px;padding:0 10px}
 .mobile-list{display:none}.mcard{padding:14px;margin-bottom:10px}.mcard-top{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px}.mcard-body{flex:1;min-width:0}.mcard h4{font-size:15px}.mcard p{color:var(--muted);font-size:12px;line-height:1.5}.mchips,.macts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.macts a,.macts button{border:0;background:transparent;color:var(--brand);font-weight:900;text-decoration:none}
-.cal-layout{display:grid;grid-template-columns:1.6fr .7fr;gap:14px}.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);border:1px solid var(--line);border-radius:14px;overflow:hidden}.dow,.day{min-height:82px;border-right:1px solid var(--line2);border-bottom:1px solid var(--line2);padding:7px}.dow{min-height:auto;background:var(--panel2);font-size:10px;text-transform:uppercase;font-weight:900;color:var(--muted);text-align:center}.day:nth-child(7n),.dow:nth-child(7n){border-right:0}.day.today{background:rgba(98,84,243,.10)}.day.sel{outline:2px solid var(--brand);outline-offset:-2px}.day-num{font-weight:900;color:var(--muted)}.event-count{display:inline-flex;align-items:center;justify-content:center;margin-left:5px;min-width:22px;height:20px;border-radius:999px;background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;font-size:10px;font-weight:900;vertical-align:top}.event{font-size:9px;margin-top:4px;padding:2px 5px;border-radius:5px;background:rgba(98,84,243,.12);color:var(--brand);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.event.ov{background:rgba(220,38,38,.12);color:var(--red)}.detail-item{padding:10px;border-bottom:1px solid var(--line2);cursor:pointer}.detail-item b{display:block}.detail-item span{color:var(--muted);font-size:11px}
+.cal-layout{display:grid;grid-template-columns:1.6fr .7fr;gap:14px}.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);border:1px solid var(--line);border-radius:14px;overflow:hidden}.dow,.day{min-height:82px;border-right:1px solid var(--line2);border-bottom:1px solid var(--line2);padding:7px}.dow{min-height:auto;background:var(--panel2);font-size:10px;text-transform:uppercase;font-weight:900;color:var(--muted);text-align:center}.day:nth-child(7n),.dow:nth-child(7n){border-right:0}.day.today{background:rgba(98,84,243,.10)}.day.sel{outline:2px solid var(--brand);outline-offset:-2px}.day-num{font-weight:900;color:var(--muted)}.event-count{display:inline-flex;align-items:center;justify-content:center;margin-left:5px;min-width:22px;height:20px;border-radius:999px;background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;font-size:10px;font-weight:900;vertical-align:top}.event{font-size:9px;margin-top:4px;padding:2px 5px;border-radius:5px;background:rgba(98,84,243,.12);color:var(--brand);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.event.ov{background:rgba(220,38,38,.12);color:var(--red)}.detail-item{padding:10px;border-bottom:1px solid var(--line2);cursor:pointer;transition:background .2s,transform .15s}.detail-item:hover{background:rgba(98,84,243,.05);transform:translateX(4px)}.detail-item b{display:block}.detail-item span{color:var(--muted);font-size:11px}
 .inactive-list{display:grid;gap:10px}.drawer-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:.2s;z-index:60}.drawer-bg.open{opacity:1;pointer-events:auto}.drawer{position:fixed;right:0;top:0;width:min(510px,100vw);height:100dvh;background:var(--panel2);border-left:1px solid var(--line);transform:translateX(105%);transition:.25s;z-index:70;display:flex;flex-direction:column}.drawer.open{transform:translateX(0)}.drawer-head{padding:16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px}.drawer-body{padding:16px;overflow:auto;flex:1}.drawer-actions{display:flex;gap:8px;padding:14px 16px;border-top:1px solid var(--line)}.drawer-actions a{flex:1;text-align:center;text-decoration:none}.side-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:.2s;z-index:74}.side-bg.open{opacity:1;pointer-events:auto}.side-nav{position:fixed;left:0;top:0;width:min(310px,86vw);height:100dvh;background:var(--panel2);border-right:1px solid var(--line);transform:translateX(-105%);transition:.25s;z-index:75;box-shadow:var(--shadow);display:flex;flex-direction:column}.side-nav.open{transform:translateX(0)}.side-head{padding:16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}.side-links{padding:10px;display:grid;gap:6px}.side-links button{height:44px;border:0;border-radius:12px;background:transparent;color:var(--muted);font-weight:900;text-align:left;padding:0 14px}
-.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.detail{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:11px}.detail small{display:block;text-transform:uppercase;font-weight:900;color:var(--soft);font-size:9px;margin-bottom:4px}.detail div{line-height:1.5;word-break:break-word}.detail.full{grid-column:1/-1}
-.fab{position:fixed;right:20px;bottom:20px;z-index:35;width:52px;height:52px;border:0;border-radius:18px;background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;font-size:24px;box-shadow:var(--shadow);transition:.18s}.fab:hover,.soft:hover,.icon:hover,.primary:hover{transform:translateY(-1px);filter:brightness(1.03)}.card,.panel,.table-card,.mcard{transition:transform .18s,box-shadow .18s,border-color .18s}.card:hover,.panel:hover,.mcard:hover{transform:translateY(-2px);border-color:rgba(98,84,243,.28)}tr{animation:rowIn .18s ease both}.pill,.tag{transition:.16s}.pill:hover{transform:scale(1.03)}
-.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:var(--text);color:var(--panel2);padding:10px 18px;border-radius:999px;font-weight:800;opacity:0;pointer-events:none;transition:.2s;z-index:90}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.52);display:none;align-items:center;justify-content:center;padding:18px;z-index:80}.modal.open{display:flex}.modal-box{width:min(560px,100%);max-height:88vh;overflow:auto;background:var(--panel2);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);animation:pop .2s ease both}.modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px;border-bottom:1px solid var(--line)}.modal-body{padding:16px}.modal-actions{display:flex;justify-content:flex-end;gap:8px;padding:14px 16px;border-top:1px solid var(--line)}.col-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.col-item{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:9px 10px;font-weight:800;color:var(--muted);user-select:none}.col-item input{accent-color:var(--brand)}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.detail{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:11px;transition:border-color .2s,transform .15s}.detail:hover{border-color:rgba(98,84,243,.25);transform:translateY(-1px)}.detail small{display:block;text-transform:uppercase;font-weight:900;color:var(--soft);font-size:9px;margin-bottom:4px}.detail div{line-height:1.5;word-break:break-word}.detail.full{grid-column:1/-1}
+.fab{position:fixed;right:20px;bottom:20px;z-index:35;width:52px;height:52px;border:0;border-radius:18px;background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;font-size:24px;box-shadow:var(--shadow)}.card,.panel,.table-card,.mcard{transition:transform .18s,box-shadow .18s,border-color .18s}.card:hover,.panel:hover,.mcard:hover{transform:translateY(-2px);border-color:rgba(98,84,243,.28)}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:var(--text);color:var(--panel2);padding:10px 18px;border-radius:999px;font-weight:800;opacity:0;pointer-events:none;z-index:90}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.52);display:none;align-items:center;justify-content:center;padding:18px;z-index:80}.modal.open{display:flex}.modal-box{width:min(560px,100%);max-height:88vh;overflow:auto;background:var(--panel2);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow)}.modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px;border-bottom:1px solid var(--line)}.modal-body{padding:16px}.modal-actions{display:flex;justify-content:flex-end;gap:8px;padding:14px 16px;border-top:1px solid var(--line)}.col-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.col-item{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:9px 10px;font-weight:800;color:var(--muted);user-select:none;transition:border-color .2s,background .2s}.col-item:hover{border-color:rgba(98,84,243,.25);background:rgba(98,84,243,.04)}.col-item input{accent-color:var(--brand)}
 .bottom-nav{display:none}.logo-img{height:26px}.quote{color:var(--soft);font-size:11px;margin-top:16px;line-height:1.6}.motivation-box{width:min(470px,100%)}.motivation-body{padding:22px}.motivation-kicker{font-size:10px;text-transform:uppercase;font-weight:900;color:var(--brand);margin-bottom:9px}.motivation-quote{font-size:22px;line-height:1.35;font-weight:800;color:var(--text)}.motivation-foot{color:var(--muted);font-size:12px;margin-top:12px}
 @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @keyframes rowIn{from{opacity:0;transform:translateX(-5px)}to{opacity:1;transform:translateX(0)}}@keyframes pop{from{opacity:0;transform:scale(.96) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
 @media(max-width:1200px){.cards{grid-template-columns:repeat(3,1fr)}.charts,.analytics-grid{grid-template-columns:1fr 1fr}.hero{grid-template-columns:1fr}}
-@media(max-width:760px){.topbar{display:grid;grid-template-columns:auto auto 1fr auto auto auto;gap:8px;padding:10px 12px;align-items:center}.menu-btn{display:grid;place-items:center;width:40px;height:40px;border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:12px;font-size:20px;font-weight:900}.brand span,.nav{display:none}.brand{gap:0}.mark{width:40px;height:40px;border-radius:13px}.right{display:contents}.right .icon{height:40px;padding:0 10px;font-size:12px}.avatar{width:40px;height:40px}.count{height:40px;display:inline-flex;align-items:center}.danger{font-size:0!important}.danger:after{content:"Out";font-size:12px}.search{grid-column:1/-1;grid-row:2;width:100%}.search input{width:100%;height:42px}.page{padding:12px}.cards{grid-template-columns:repeat(2,1fr)}.charts,.analytics-grid,.cal-layout{grid-template-columns:1fr}.toolbar{display:grid;grid-template-columns:1fr 1fr;gap:8px}.toolbar label,.toolbar .grow{display:none}.toolbar select,.toolbar input,.toolbar button{width:100%;min-width:0}.tool-row{display:grid;grid-template-columns:1fr 1fr;grid-column:1/-1}.table-wrap{display:none}.mobile-list{display:block}.detail-grid{grid-template-columns:1fr}.day{min-height:54px}.event{display:none}.event-count{min-width:20px;height:18px;font-size:9px;margin-left:3px}.day.has:after{content:"";display:block;width:6px;height:6px;border-radius:50%;background:var(--brand);margin:4px auto 0}.bottom-nav{display:none}.fab{bottom:18px}}
+@media(max-width:760px){.topbar{display:grid;grid-template-columns:auto auto 1fr auto auto auto;gap:8px;padding:10px 12px;align-items:center}.menu-btn{display:grid;place-items:center;width:40px;height:40px;border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:12px;font-size:20px;font-weight:900}.brand span,.nav{display:none}.brand{gap:0}.mark{width:40px;height:40px;border-radius:13px}.right{display:contents}.right .icon{height:40px;padding:0 10px;font-size:12px}.avatar{width:40px;height:40px}.count{height:40px;display:inline-flex;align-items:center}.danger{font-size:0!important}.danger:after{content:"Out";font-size:12px}.search{grid-column:1/-1;grid-row:2;width:100%}.search input{width:100%;height:42px}.page{padding:12px}.cards{grid-template-columns:repeat(2,1fr)}.charts,.analytics-grid,.cal-layout{grid-template-columns:1fr}.toolbar{display:grid;grid-template-columns:1fr 1fr;gap:8px}.toolbar label,.toolbar .grow{display:none}.toolbar select,.toolbar input,.toolbar button{width:100%;min-width:0}.tool-row{display:grid;grid-template-columns:1fr 1fr;grid-column:1/-1}.table-wrap{display:none}.mobile-list{display:block}.detail-grid{grid-template-columns:1fr}.day{min-height:54px}.event{display:none}.event-count{min-width:20px;height:18px;font-size:9px;margin-left:3px}.day.has:after{content:"";display:block;width:6px;height:6px;border-radius:50%;background:var(--brand);margin:4px auto 0}.bottom-nav{display:none}.fab{bottom:18px}
+/* Reduce floating orbs on mobile */
+body::before{width:200px;height:200px}body::after{width:180px;height:180px}}
 </style>
 </head>
 <body>
@@ -133,14 +398,14 @@ tr:hover td{background:rgba(98,84,243,.06)}.num{width:42px}.emp{width:150px}.dat
 <div class="modal" id="colModal"><div class="modal-box"><div class="modal-head"><div><h3 id="colModalTitle">Export Columns</h3><p class="sub" id="colModalSub">Choose the fields for export.</p></div><button class="icon" id="closeColModal">Close</button></div><div class="modal-body"><div class="col-grid" id="colGrid"></div></div><div class="modal-actions"><button class="soft" id="selectAllCols">Select all</button><button class="soft red" id="clearAllCols">Clear</button><button class="primary" id="applyColExport">Export</button></div></div></div>
 <div class="modal" id="photoModal"><div class="modal-box" style="width:min(980px,100%);height:min(86vh,760px);display:flex;flex-direction:column"><div class="modal-head"><div><h3>Site Photos</h3><p class="sub">Preview opens inside CRM.</p></div><button class="icon" id="closePhotoModal">Close</button></div><iframe id="photoFrame" style="border:0;width:100%;flex:1;background:#fff"></iframe></div></div>
 <div class="modal" id="pdfModal"><div class="modal-box" style="width:min(1000px,100%);height:min(90vh,780px);display:flex;flex-direction:column"><div class="modal-head"><div><h3>PDF Preview</h3><p class="sub">Use Print / Save as PDF after preview.</p></div><div style="display:flex;gap:8px"><button class="soft green" id="printPdfBtn">Print / Save PDF</button><button class="icon" id="closePdfModal">Close</button></div></div><iframe id="pdfFrame" style="border:0;width:100%;flex:1;background:#fff"></iframe></div></div>
-<div class="modal" id="motivationModal"><div class="modal-box motivation-box"><div class="modal-head"><div><h3 id="motivationTitle">Welcome back</h3><p class="sub">A quick thought before the field work starts.</p></div><button class="icon" id="closeMotivation">Close</button></div><div class="motivation-body"><div class="motivation-kicker">Today's push</div><div class="motivation-quote" id="motivationText">Every visit is a seed. Follow-up is the water.</div><div class="motivation-foot" id="motivationRef">AMROCK CRM keeps the work visible, but your follow-up closes the loop.</div></div><div class="modal-actions"><button class="primary" id="startMotivation">Start work</button></div></div></div>
+<div class="modal" id="motivationModal"><div class="modal-box motivation-box"><div class="modal-head"><div><h3 id="motivationTitle">Welcome back</h3><p class="sub">A quick thought before the field work starts.</p></div><button class="icon" id="closeMotivation">Close</button></div><div class="motivation-body"><div class="motivation-kicker">Today's push</div><div class="motivation-quote" id="motivationText">Every visit is a seed. Follow-up is the water.</div><div class="motivation-foot">AMROCK CRM keeps the work visible, but your follow-up closes the loop.</div></div><div class="modal-actions"><button class="primary" id="startMotivation">Start work</button></div></div></div>
 <div class="toast" id="toast">Done</div>
 <script>
 const SHEET_ID='1YfSGEeoqX_1zDudb4R70ln7zgL81chjo2su5mruCKDs',SHEET_NAME='Form Responses 1';
 const USERS={gaurav:{password:'1112',role:'management',displayName:'Gaurav'},alpa:{password:'80198',role:'management',displayName:'Alpa'},krishna:{password:'9737',role:'management',displayName:'Krishna'},yash:{password:'2528',role:'management',displayName:'Yash'},manish:{password:'1627',role:'management',displayName:'Manish'},shraddha:{password:'3861',role:'management',displayName:'Shraddha'},chirag:{password:'Chirag42',role:'employee',displayName:'Chirag',employeeName:'CHIRAG'},pratham:{password:'Pratham62',role:'employee',displayName:'Pratham',employeeName:'PRATHAM'},kiran:{password:'Kiran23',role:'employee',displayName:'Kiran',employeeName:'KIRAN'},het:{password:'Het50',role:'employee',displayName:'Het',employeeName:'HET'},krish:{password:'Krish10',role:'employee',displayName:'Krish',employeeName:'KRISH'}};
 const NAV=[['dash','Dashboard','secDash'],['overdue','Overdue','secOverdue'],['inactive','Inactive','secInactive'],['visits','All Visits','secVisits'],['today','Today','secToday'],['petrol','Petrol','secPetrol'],['calendar','Calendar','secCalendar'],['analytics','Analytics','secAnalytics'],['reports','Reports','secReports']];
 const EXPORT_COLS=[['Timestamp','timestamp'],['Email address','email'],['Name of Employee','employee'],['ENTRY TYPE','entryType'],['Visit Date','visitDate'],['Name of Client','client'],['Client Type','clientType'],['Client Mobile No.','mobile'],['Site Name','site'],['Previous Site Name & Address','prevSiteAddr'],['Site Address','siteAddress'],['Kilometers','kilometers'],['Upload Site Photos','photos'],['Reference','reference'],['Product Name','product'],['Remarks','remark'],['Date of follow-up','followupDate'],['Note for Follow up','followupNote'],['Response ID','responseId'],['Edit Response URL','editUrl'],['Last Reminder Date','lastReminderDate'],['Reminder Status','status'],['Remark History','remarkHistory'],['Snapshot Remark','snapRemark'],['Snapshot Follow-up Date','snapFollowup'],['Snapshot Note','snapNote'],['Last Edit Date','lastEditDate'],['Snapshot Hash','snapHash'],['View Prefilled URL','prefillUrl']];
-const FALLBACK_MOTIVATION={text:'Every visit is a seed. Follow-up is the water.',author:'AMROCK CRM',source:'Local fallback'};
+const MOTIVATION_QUOTES=['Every visit is a seed. Follow-up is the water.','Today, one clean follow-up can become tomorrow\'s order.','Small daily visits build the biggest client trust.','Do the next right call. The report will take care of itself.','A strong pipeline is made from honest notes and timely follow-up.','Clients remember the person who shows up twice.','One useful conversation is better than ten forgotten leads.','Good field work is simple: visit, listen, note, follow up.','The best sales habit is returning before the client has to ask.','Keep moving. Clear records, clear mind, clear next step.','Your next visit may be the one that changes the month.','Trust grows when AMROCK follows up on time.'];
 let selectedExportCols=['employee','entryType','visitDate','client','clientType','mobile','site','siteAddress','kilometers','reference','product','remark','followupDate','followupNote','status','editUrl'];
 const PETROL_RATE=1.8;
 let ALL_ROWS=[],myRows=[],currentUser=null,isMgmt=false,currentSec='dash',page=1,pageSize=60,charts={},calYear=new Date().getFullYear(),calMonth=new Date().getMonth(),calSelected='',pendingExportFormat='excel';
@@ -169,7 +434,7 @@ function renderInactive(){let by={};srcRows().forEach(r=>{if(!r.client)return;le
 function renderDashboard(){let rows=rangeRows(srcRows()),all=srcRows(),today=todayDD(),over=all.filter(r=>statusOf(r)==='Overdue'),due=all.filter(r=>statusOf(r)==='Due today'),empSet=new Set(rows.map(r=>r.employee).filter(Boolean)),totKm=rows.reduce((s,r)=>s+km(r.kilometers),0),kpis=[['Visits',rows.length,'Selected period'],['Today',all.filter(r=>r.visitDate===today).length,'Logged today'],['Due',due.length,'Follow-ups'],['Overdue',over.length,'Need action'],['KM',Math.round(totKm),'Period total'],['Employees',empSet.size,'With entries']];$('kpis').innerHTML=kpis.map(k=>`<div class="card"><small>${k[0]}</small><b>${k[1]}</b><span>${k[2]}</span></div>`).join('');$('alertBar').style.display=over.length?'flex':'none';$('alertBar').innerHTML=`<span>${over.length} overdue follow-ups</span><span>${today}</span>`;let navOv=$('navOv');if(navOv)navOv.textContent=over.length;let sideOv=$('sideOv');if(sideOv)sideOv.textContent=over.length;buildInsights(all);drawBaseCharts(rows)}
 function latestByEmployee(rows){let map={};rows.forEach(r=>{let iso=ddToIso(r.visitDate);if(r.employee&&iso&&(!map[r.employee]||iso>map[r.employee].iso))map[r.employee]={iso,date:r.visitDate}});return map}
 function buildInsights(rows){let today=todayDD(),emps=uniqueEmps(rows),todaySet=new Set(rows.filter(r=>r.visitDate===today).map(r=>r.employee)),items=[],missing=emps.filter(e=>!todaySet.has(e));if(missing.length)items.push(['warning',missing.length+' employees not logged today: '+missing.slice(0,4).join(', ')+(missing.length>4?'...':'')]);let now=new Date(),wsD=new Date(now);wsD.setDate(now.getDate()-((now.getDay()||7)-1));let ws=wsD.toISOString().slice(0,10),lwS=new Date(wsD),lwE=new Date(wsD);lwS.setDate(lwS.getDate()-7);lwE.setDate(lwE.getDate()-1);let tw=rows.filter(r=>ddToIso(r.visitDate)>=ws&&ddToIso(r.visitDate)<=now.toISOString().slice(0,10)).length,lw=rows.filter(r=>ddToIso(r.visitDate)>=lwS.toISOString().slice(0,10)&&ddToIso(r.visitDate)<=lwE.toISOString().slice(0,10)).length;if(lw)items.push(['trend',`This week: ${tw} visits vs ${lw} last week (${tw-lw>0?'+':''}${tw-lw})`]);let latest=latestByEmployee(rows);emps.forEach(e=>{let d=latest[e]?Math.max(0,diffDays(latest[e].date)):999;if(d>=3)items.push(['calendar',`${e} not logged in ${d} days (last: ${latest[e]?latest[e].date:'never'})`])});let ym=now.getFullYear()+'-'+pad(now.getMonth()+1),counts={};rows.filter(r=>ddToIso(r.visitDate).startsWith(ym)).forEach(r=>counts[r.employee]=(counts[r.employee]||0)+1);let top=Object.keys(counts).sort((a,b)=>counts[b]-counts[a])[0];if(top)items.push(['top',`${top} leads this month: ${counts[top]} visits`]);let ov=rows.filter(r=>statusOf(r)==='Overdue');if(ov.length)items.push(['overdue',`${ov.length} overdue - ${ov.filter(r=>diffDays(r.followupDate)>14).length} older than 14 days`]);$('insightCount').textContent=items.length;$('insights').innerHTML=items.map(i=>`<div class="insight"><b>${i[0]}</b><span>${esc(i[1])}</span></div>`).join('')||'<div class="insight"><b>good</b><span>No urgent insights for now.</span></div>'}
-function chart(id,type,labels,data,colors){if(charts[id])charts[id].destroy();let ctx=$(id);if(!ctx)return;charts[id]=new Chart(ctx,{type,data:{labels,datasets:[{data,backgroundColor:colors||['#6254f3','#0ea5e9','#db2777','#d97706','#059669','#dc2626'],borderWidth:0,borderRadius:type==='bar'?8:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:type!=='bar',position:'bottom',labels:{boxWidth:10,font:{size:10}}}},scales:type==='bar'?{x:{grid:{display:false}},y:{beginAtZero:true,grid:{color:'rgba(148,163,184,.16)'}}}:undefined}})}
+function chart(id,type,labels,data,colors){if(charts[id])charts[id].destroy();let ctx=$(id);if(!ctx)return;charts[id]=new Chart(ctx,{type,data:{labels,datasets:[{data,backgroundColor:colors||['#6254f3','#0ea5e9','#db2777','#d97706','#059669','#dc2626'],borderWidth:0,borderRadius:type==='bar'?8:0}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:800,easing:'easeOutQuart'},plugins:{legend:{display:type!=='bar',position:'bottom',labels:{boxWidth:10,font:{size:10}}}},scales:type==='bar'?{x:{grid:{display:false}},y:{beginAtZero:true,grid:{color:'rgba(148,163,184,.16)'}}}:undefined}})}
 function groupCount(rows,fn){let o={};rows.forEach(r=>{let k=fn(r)||'Unknown';o[k]=(o[k]||0)+1});return o}function groupSum(rows,fn,val){let o={};rows.forEach(r=>{let k=fn(r)||'Unknown';o[k]=(o[k]||0)+val(r)});return o}
 function drawBaseCharts(rows){let e=groupCount(rows,r=>r.employee),st=groupCount(rows,statusOf),k=groupSum(rows,r=>r.employee,r=>km(r.kilometers));chart('chartVisits','bar',Object.keys(e),Object.values(e));chart('chartStatus','doughnut',Object.keys(st),Object.values(st));chart('chartKm','bar',Object.keys(k),Object.values(k))}
 function renderAnalytics(){let rows=srcRows(),now=new Date(),months=[],labels=[];for(let i=5;i>=0;i--){let d=new Date(now.getFullYear(),now.getMonth()-i,1);months.push(d.getFullYear()+'-'+pad(d.getMonth()+1));labels.push(d.toLocaleString('en',{month:'short'}))}chart('chartSix','bar',labels,months.map(m=>rows.filter(r=>ddToIso(r.visitDate).startsWith(m)).length));let ct=groupCount(rows,r=>r.clientType),et=groupCount(rows,r=>r.entryType),wd=[0,0,0,0,0,0,0];rows.forEach(r=>{let iso=ddToIso(r.visitDate);if(iso){let d=new Date(iso);if(!isNaN(d))wd[d.getDay()]++}});chart('chartClientType','doughnut',Object.keys(ct),Object.values(ct));chart('chartEntryType','doughnut',Object.keys(et),Object.values(et));chart('chartWeekday','bar',['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],wd);let ov=rows.filter(r=>statusOf(r)==='Overdue'),aging={'1-7d':0,'8-14d':0,'15-30d':0,'31d+':0};ov.forEach(r=>{let d=diffDays(r.followupDate);if(d<=7)aging['1-7d']++;else if(d<=14)aging['8-14d']++;else if(d<=30)aging['15-30d']++;else aging['31d+']++});chart('chartAging','bar',Object.keys(aging),Object.values(aging));let total=rows.length,set=rows.filter(r=>r.followupDate).length,done=rows.filter(r=>statusOf(r)==='Done').length;chart('chartFunnel','bar',['Visits','Follow-up Set','Done'],[total,set,done],['#6254f3','#0ea5e9','#059669'])}
@@ -187,8 +452,8 @@ function openSideNav(){$('sideBg').classList.add('open');$('sideNav').classList.
 function closeSideNav(){$('sideBg').classList.remove('open');$('sideNav').classList.remove('open')}
 function closePdfPopup(){$('pdfFrame').srcdoc='';$('pdfModal').classList.remove('open')}
 function printPdfPopup(){let f=$('pdfFrame');if(f&&f.contentWindow){try{f.contentWindow.focus();f.contentWindow.print()}catch(e){toast('Print preview blocked by browser')}}}
-async function fetchDailyMotivation(){let key='amrock_daily_quote_'+new Date().toISOString().slice(0,10),cached=localStorage.getItem(key);if(cached){try{return JSON.parse(cached)}catch(e){}}try{let ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),4500),url='https://api.quotable.io/random?tags=inspirational|success';let data=await fetch(url,{signal:ctrl.signal}).then(r=>r.json());clearTimeout(timer);let quote={text:data.content||FALLBACK_MOTIVATION.text,author:data.author||'Unknown',source:'Quotable API - '+url};localStorage.setItem(key,JSON.stringify(quote));return quote}catch(e){return FALLBACK_MOTIVATION}}
-async function showLoginMotivation(){$('motivationTitle').textContent='Good '+greeting()+', '+(currentUser?currentUser.displayName:'');$('motivationText').textContent='Finding today\'s motivation...';$('motivationRef').textContent='Fetching online quote with reference';$('motivationModal').classList.add('open');let q=await fetchDailyMotivation();$('motivationText').textContent=q.text;$('loginQuote').textContent=q.text;$('motivationRef').textContent='Reference: '+q.author+' | Source: '+q.source}
+function nextMotivationQuote(){let last=localStorage.getItem('amrock_last_quote')||'',list=MOTIVATION_QUOTES.filter(q=>q!==last),quote=list[Math.floor(Math.random()*list.length)]||MOTIVATION_QUOTES[0];localStorage.setItem('amrock_last_quote',quote);return quote}
+function showLoginMotivation(){let q=nextMotivationQuote();$('motivationTitle').textContent='Good '+greeting()+', '+(currentUser?currentUser.displayName:'');$('motivationText').textContent=q;$('loginQuote').textContent=q;$('motivationModal').classList.add('open')}
 function closeMotivation(){$('motivationModal').classList.remove('open')}
 function openExportChoice(){$('exportChoiceModal').classList.add('open')}
 function closeExportChoice(){$('exportChoiceModal').classList.remove('open')}
